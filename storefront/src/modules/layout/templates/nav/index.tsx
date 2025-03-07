@@ -66,6 +66,12 @@ export default async function Nav() {
             </div>
           </div>
         </nav>
+        <div className="scrollHorizantal">
+                    <a href="https://xglobal-tents.com">Contact Sales Center</a>
+                    <a href="https://xglobal-tents.com/#4">Get Quote Today</a>
+                    <a href="https://xglobal-tents.com/#3">Tents Solutions</a>
+                    <a href="https://xglobal-tents.com/#6">Tent Projects</a>
+        </div>
       </header>
     </div>
   )
