@@ -1,0 +1,35 @@
+
+.cart-icon{
+    line-height: 1.5;
+    padding: 5px;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    text-align: center;
+}
+
+html, body {
+    width: 100%;
+    height: 100% !important;
+}
+
+.scrollHorizantal{
+    overflow-x: auto !important;
+    white-space: nowrap;
+    scrollbar-width: none;
+    --tw-backdrop-blur: blur(12px);
+backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
+}
+.scrollHorizantal a{
+display: inline-block;
+text-align: center;
+padding: 15px;
+text-decoration: none;
+padding-top: 5px;
+padding-bottom: 5px;
+margin-top: auto;
+margin-bottom: auto;
+}
+
+header{
+    position: relative;
+}
