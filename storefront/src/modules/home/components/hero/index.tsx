@@ -3,30 +3,35 @@ import { Button, Heading } from "@medusajs/ui"
 
 const Hero = () => {
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-6">
+    <div className="w-full h-full relative  border-b border-ui-border-base bg-gradient-to-r from-blue-200 to-blue-300">
+      <div className="relative inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-5">
         <span>
           <Heading
             level="h1"
-            className="text-3xl leading-10 text-ui-fg-base font-normal"
+            className="text-3xl leading-10 text-ui-fg-base font-semibold"
           >
-            Well done! You have successfully deployed your Medusa 2.0 store on Railway!
+            <br></br> <br></br> The Leading Tent Manufacturer!
+             <br></br>
+            products including Aluminum Tents, Modular Tent Structures,
+            <br></br> 
+
           </Heading>
           <Heading
             level="h2"
             className="text-3xl leading-10 text-ui-fg-subtle font-normal"
           >
-            Need help customizing your store?
+            <br></br><br></br>
+            Explore our line up of trending tents today. At the best prices.
           </Heading>
         </span>
         <a
-          href="https://funkyton.com/medusajs-2-0-is-finally-here/"
-          target="_blank"
+          href="/store/"
         >
-          <h1 style={{ textDecoration: "underline" }}>
-            Visit the tutorial
-          </h1>
+          <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded-2xl shadow">
+              Shop Now
+          </button>
         </a>
+        <br></br>
       </div>
     </div>
   )
