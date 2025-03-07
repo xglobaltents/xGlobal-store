@@ -12,7 +12,7 @@ const Hero = () => {
           >
             <br></br> <br></br> The Leading Tent Manufacturer!
              <br></br>
-            products including Aluminum Tents, Modular Tent Structures,
+            Products Including Aluminum Tents, Modular Tent Structures,
             <br></br> 
 
           </Heading>
@@ -21,7 +21,7 @@ const Hero = () => {
             className="text-3xl leading-10 text-ui-fg-subtle font-normal"
           >
             <br></br><br></br>
-            Explore our line up of trending tents today. At the best prices.
+            Explore our line up of trending tents today.
           </Heading>
         </span>
         <a

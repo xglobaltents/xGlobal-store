@@ -49,6 +49,7 @@ export default async function Nav() {
                 Account
               </LocalizedClientLink>
             </div>
+            <div className="cart-icon">
             <Suspense
               fallback={
                 <LocalizedClientLink
@@ -62,6 +63,7 @@ export default async function Nav() {
             >
               <CartButton />
             </Suspense>
+            </div>
           </div>
         </nav>
       </header>
