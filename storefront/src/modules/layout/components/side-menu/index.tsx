@@ -71,7 +71,7 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                         )
                       })}
                     </ul>
-                    <div className="flex flex-col gap-y-6 pb-11">
+                    <div className="flex flex-col gap-y-6 pb-13">
                       <div
                         className="flex justify-between"
                         onMouseEnter={toggleState.open}
