@@ -71,12 +71,6 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                         )
                       })}
                     </ul>
-                    <div className="scrollHorizantal">
-                    <a href="/categories/shop-by-brands">Shop by brand</a>
-                    <a href="/categories/shop-by-section">Shop by section</a>
-                    <a href="/collections/sales">Sale Collection</a>
-                    <a href="/collections/best-seller">Best seller</a>
-                    </div>
                     <div className="flex flex-col gap-y-6">
                       <div
                         className="flex justify-between"
@@ -97,7 +91,7 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                         />
                       </div>
                       <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Makeup Store.<br></br> All rights
+                        © {new Date().getFullYear()} xGlobal Tents.<br></br> All rights
                         reserved.
                       </Text>
                     </div>
