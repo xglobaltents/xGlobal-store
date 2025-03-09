@@ -21,8 +21,8 @@ const Hero = () => {
             className="text-3xl leading-10 text-ui-fg-subtle font-normal"
           >
             <br></br>
-            
-<svg className='hero-logo' version="1.0" xmlns="http://www.w3.org/2000/svg"
+ <span className="hero-logo">       
+<svg  version="1.0" xmlns="http://www.w3.org/2000/svg"
  width="120px" height="auto" viewBox="0 0 1250.000000 475.000000"
  preserveAspectRatio="xMidYMid meet">
 
@@ -107,6 +107,7 @@ m429 -168 c94 -39 145 -121 152 -243 8 -145 -32 -228 -134 -278 -48 -24 -72
 -260 0 -260 0 0 -440z"/>
 </g>
 </svg>
+</span>    
 
             <br></br>
             Explore our line up of premium tents today.
