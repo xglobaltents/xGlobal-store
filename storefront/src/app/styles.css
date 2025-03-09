@@ -8,9 +8,7 @@
 }
 
 .hero-logo{
-    justify-self: center;
-    place-self: anchor-center;
-    justify-self: anchor-center;
+    text-align: -webkit-center;
 }
 
 html, body {
