@@ -14,11 +14,11 @@ type ProductTabsProps = {
 const ProductTabs = ({ product }: ProductTabsProps) => {
   const tabs = [
     {
-      label: "Product Information",
+      label: "Tent Information",
       component: <ProductInfoTab product={product} />,
     },
     {
-      label: "Shipping & Returns",
+      label: "Shipping & Installation",
       component: <ShippingInfoTab />,
     },
   ]
@@ -47,7 +47,7 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
       <div className="grid grid-cols-2 gap-x-8">
         <div className="flex flex-col gap-y-4">
           <div>
-            <span className="font-semibold">Material</span>
+            <span className="font-semibold">Tent Material</span>
             <p>{product.material ? product.material : "-"}</p>
           </div>
           <div>
@@ -55,7 +55,7 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
             <p>{product.origin_country ? product.origin_country : "-"}</p>
           </div>
           <div>
-            <span className="font-semibold">Type</span>
+            <span className="font-semibold">Tent type</span>
             <p>{product.type ? product.type.value : "-"}</p>
           </div>
         </div>
@@ -65,7 +65,7 @@ const ProductInfoTab = ({ product }: ProductTabsProps) => {
             <p>{product.weight ? `${product.weight} g` : "-"}</p>
           </div>
           <div>
-            <span className="font-semibold">Dimensions</span>
+            <span className="font-semibold">Dimensions from</span>
             <p>
               {product.length && product.width && product.height
                 ? `${product.length}L x ${product.width}W x ${product.height}H`
