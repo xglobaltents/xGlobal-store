@@ -23,7 +23,7 @@ export default async function Home({
     return null
   }
 
-  const storeUrl = `/store/${countryCode}`
+  const storeUrl = `/${countryCode}/store`
 
   return (
     <>
