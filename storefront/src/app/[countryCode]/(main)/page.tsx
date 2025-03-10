@@ -6,7 +6,7 @@ import { getCollectionsWithProducts } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
-  title: "xGlobal Tents Supplier and Manufactutrer",
+  title: "xGlobal Tents Supplier and Manufacturer",
   description:
     "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
 }
@@ -23,9 +23,11 @@ export default async function Home({
     return null
   }
 
+  const storeUrl = `/store/${countryCode}`
+
   return (
     <>
-      <Hero />
+      <Hero storeUrl={storeUrl} />
       <div className="py-12">
         <ul className="flex flex-col gap-x-6">
           <FeaturedProducts collections={collections} region={region} />
