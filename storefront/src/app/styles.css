@@ -17,6 +17,7 @@ html, body {
 }
 
 .scrollHorizantal{
+    text-align: center;
     overflow-x: auto !important;
     white-space: nowrap;
     scrollbar-width: none;
@@ -32,7 +33,6 @@ padding-top: 5px;
 padding-bottom: 5px;
 margin-top: auto;
 margin-bottom: auto;
-text-align: -webkit-center;
 }
 
 header{
