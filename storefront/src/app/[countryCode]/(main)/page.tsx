@@ -1,4 +1,3 @@
-import { Metadata } from "next"
 import Head from "next/head"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
