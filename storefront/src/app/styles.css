@@ -16,6 +16,13 @@ html, body {
     height: 100% !important;
 }
 
+html {
+    height:100.1%;
+    overflow-y: scroll;
+    }
+
+    
+
 .scrollHorizantal{
     text-align: center;
     overflow-x: auto !important;
