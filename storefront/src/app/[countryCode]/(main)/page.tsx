@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Head from "next/head"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
@@ -20,14 +21,15 @@ export default async function Home({
   const storeUrl = `/${countryCode}/store`
 
   // Dynamically set metadata title with country name
-  const metadata: Metadata = {
-    title: `xGlobal Tents Supplier and Manufacturer in ${region.name}`,
-    description:
-      `The Leading Tent Manufacturer in ${region.name}, Tents Including Aluminum Tents, Modular Tent Structures`,
-  }
+  const title = `xGlobal Tents Supplier and Manufacturer in ${region.name}`
+  const description = `The Leading Tent Manufacturer in ${region.name}, Tents Including Aluminum Tents, Modular Tent Structures`
 
   return (
     <>
+      <Head>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+      </Head>
       <Hero storeUrl={storeUrl} />
       <div className="py-12">
         <ul className="flex flex-col gap-x-6">
