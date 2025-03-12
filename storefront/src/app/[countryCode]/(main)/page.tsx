@@ -5,12 +5,6 @@ import Hero from "@modules/home/components/hero"
 import { getCollectionsWithProducts } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
 
-export const metadata: Metadata = {
-  title: "xGlobal Tents Supplier and Manufacturer",
-  description:
-    "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
-}
-
 export default async function Home({
   params: { countryCode },
 }: {
@@ -24,6 +18,13 @@ export default async function Home({
   }
 
   const storeUrl = `/${countryCode}/store`
+
+  // Dynamically set metadata title with country name
+  const metadata: Metadata = {
+    title: `xGlobal Tents Supplier and Manufacturer in ${region.name}`,
+    description:
+      "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
+  }
 
   return (
     <>
