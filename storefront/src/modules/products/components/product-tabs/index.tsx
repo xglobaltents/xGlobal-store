@@ -87,29 +87,30 @@ const ShippingInfoTab = () => {
           <div>
             <span className="font-semibold">Fast delivery</span>
             <p className="max-w-sm">
-              Your package will arrive in 3-5 business days at your pick up
-              location or in the comfort of your home.
+              Your tent will arrive in 3-10 business days at your desired
+              location.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Refresh />
           <div>
-            <span className="font-semibold">Simple exchanges</span>
+            <span className="font-semibold">Fittings and accessories</span>
             <p className="max-w-sm">
-              Is the fit not quite right? No worries - we&apos;ll exchange your
-              product for a new one.
+              We provide all tent accessories like doors &apos; windows, etc.
+              You can also buy additional accessories from our  tent store.
             </p>
           </div>
         </div>
         <div className="flex items-start gap-x-2">
           <Back />
           <div>
-            <span className="font-semibold">Easy returns</span>
+            <span className="font-semibold">Shipping and installation</span>
             <p className="max-w-sm">
-              Just return your product and we&apos;ll refund your money. No
-              questions asked – we&apos;ll do our best to make sure your return
-              is hassle-free.
+            Tent installation and removal are easy, and we provide a manual for
+            installation. You can also watch our installation video on our
+            website.
+            Transport and tent assembly · We can take full care of the transport to your location, regardless of the destination ·
             </p>
           </div>
         </div>
