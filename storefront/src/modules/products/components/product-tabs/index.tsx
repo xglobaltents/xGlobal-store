@@ -97,7 +97,7 @@ const ShippingInfoTab = () => {
           <div>
             <span className="font-semibold">Fittings and accessories</span>
             <p className="max-w-sm">
-              We provide all tent accessories like doors &apos; windows, etc.
+              We provide all tent accessories like doors, windows, etc.
               You can also buy additional accessories from our  tent store.
             </p>
           </div>
@@ -110,7 +110,7 @@ const ShippingInfoTab = () => {
             Tent installation and removal are easy, and we provide a manual for
             installation. You can also watch our installation video on our
             website.
-            Transport and tent assembly · We can take full care of the transport to your location, regardless of the destination ·
+            We can take full care of the transport to your location and tent assembly, regardless of the destination ·
             </p>
           </div>
         </div>
