@@ -23,7 +23,7 @@ export default async function Home({
   const metadata: Metadata = {
     title: `xGlobal Tents Supplier and Manufacturer in ${region.name}`,
     description:
-      "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
+      `The Leading Tent Manufacturer in ${region.name}, Tents Including Aluminum Tents, Modular Tent Structures`,
   }
 
   return (
