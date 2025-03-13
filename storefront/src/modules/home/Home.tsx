@@ -174,4 +174,37 @@ const Hero: React.FC<HeroProps> = ({ storeUrl, countryName }) => {
   )
 }
 
-export default Hero
+const Home: React.FC<{ params: { countryCode: string } }> = ({ params: { countryCode } }) => {
+  const [collections, setCollections] = React.useState(null)
+  const [region, setRegion] = React.useState(null)
+  const countryName = countryNames[countryCode] || region?.name || countryCode
+
+  React.useEffect(() => {
+    async function fetchData() {
+      const collectionsData = await getCollectionsWithProducts(countryCode)
+      const regionData = await getRegion(countryCode)
+      setCollections(collectionsData)
+      setRegion(regionData)
+    }
+    fetchData()
+  }, [countryCode])
+
+  if (!collections || !region) {
+    return null
+  }
+
+  const storeUrl = `/${countryCode}/store`
+
+  return (
+    <>
+      <Hero storeUrl={storeUrl} countryName={countryName} />
+      <div className="py-12">
+        <ul className="flex flex-col gap-x-6">
+          <FeaturedProducts collections={collections} region={region} />
+        </ul>
+      </div>
+    </>
+  )
+}
+
+export default Home
