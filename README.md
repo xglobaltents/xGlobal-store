@@ -6,7 +6,6 @@
       <img alt="xGlobal-tents.com" src="[https://avatars.githubusercontent.com/u/197592655?s=48&v=4]
     </picture>
   </a>
-  <a href="[https://railway.app/template/gkU-27?referralCode=-Yg50p](https://avatars.githubusercontent.com/u/197592655?s=48&v=4)">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://avatars.githubusercontent.com/u/197592655?s=48&v=4">
       <source media="(prefers-color-scheme: light)" srcset="https://avatars.githubusercontent.com/u/197592655?s=48&v=4">
