@@ -31,7 +31,6 @@ const countryNames: { [key: string]: string } = {
 }
 
 export async function generateMetadata({ params: { countryCode } }): Promise<Metadata> {
-  const region = await getRegion(countryCode)
   const countryName = countryNames[countryCode] || countryCode
 
   return {
