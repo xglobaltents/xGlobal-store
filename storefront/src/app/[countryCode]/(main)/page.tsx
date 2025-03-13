@@ -25,7 +25,7 @@ const countryNames: { [key: string]: string } = {
   RW: "Rwanda",
   SA: "Saudi Arabia",
   ZA: "South Africa",
- //SS: "South Sudan",
+  SS: "South Sudan",
   SE: "Sweden",
   AE: "United Arab Emirates",
 }
