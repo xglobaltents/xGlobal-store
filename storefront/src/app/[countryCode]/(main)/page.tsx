@@ -46,7 +46,7 @@ export default async function Home({
 }) {
   const collections = await getCollectionsWithProducts(countryCode)
   const region = await getRegion(countryCode)
-    const countryName = countryNames[countryCode] || countryCode
+  const countryName = countryNames[countryCode] || countryCode
 
 
   if (!collections || !region) {
