@@ -60,7 +60,7 @@ export default async function Home({
     return null
   }
 
- const storeUrl = `/${countryCode}/store`
+  const storeUrl = `/${countryCode}/store`
 
   return (
     <>
