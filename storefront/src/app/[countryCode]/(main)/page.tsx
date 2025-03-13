@@ -31,7 +31,15 @@ const countryNames: { [key: string]: string } = {
 }
 
 export async function generateMetadata({ params: { countryCode } }): Promise<Metadata> {
-  const countryName = countryNames[countryCode] || countryCode
+  const region = await getRegion(countryCode)
+  const countryName = countryNames[countryCode] || region?.name || countryCode
+
+  if (!region) {
+    return {
+      title: `xGlobal Tents Supplier and Manufacturer in ${countryName}`,
+      description: "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
+    }
+  }
 
   return {
     title: `xGlobal Tents Supplier and Manufacturer in ${countryName}`,
@@ -46,13 +54,13 @@ export default async function Home({
 }) {
   const collections = await getCollectionsWithProducts(countryCode)
   const region = await getRegion(countryCode)
-  const countryName = countryNames[countryCode] || countryCode
+  const countryName = countryNames[countryCode] || region?.name || countryCode
 
   if (!collections || !region) {
     return null
   }
 
-  const storeUrl = `/${countryCode}/store`
+ const storeUrl = `/${countryCode}/store`
 
   return (
     <>
