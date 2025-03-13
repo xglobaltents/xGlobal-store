@@ -17,6 +17,7 @@ const countryNames: { [key: string]: string } = {
   GA: "Gabon",
   DE: "Germany",
   IQ: "Iraq",
+  EG: "Egypt",
   KW: "Kuwait",
   NL: "Netherlands",
   NG: "Nigeria",
