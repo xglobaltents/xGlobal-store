@@ -6,33 +6,55 @@ import { getRegion } from "@lib/data/regions"
 
 // Map country codes to country names
 const countryNames: { [key: string]: string } = {
+  AE: "United Arab Emirates",
   AO: "Angola",
   AT: "Austria",
   BH: "Bahrain",
   BW: "Botswana",
-  TD: "Chad",
+  CD: "Democratic Republic of the Congo",
   CG: "Congo",
-  GQ: "Equatorial Guinea",
+  CI: "Côte d'Ivoire",
+  CM: "Cameroon",
+  DE: "Germany",
+  DZ: "Algeria",
+  EG: "Egypt",
+  ET: "Ethiopia",
   FR: "France",
   GA: "Gabon",
-  //DE: "Germany",
+  GB: "United Kingdom",
+  GH: "Ghana",
+  GQ: "Equatorial Guinea",
   IQ: "Iraq",
-  EG: "Egypt",
+  JO: "Jordan",
+  KE: "Kenya",
   KW: "Kuwait",
-  NL: "Netherlands",
+  LY: "Libya",
+  MA: "Morocco",
+  ML: "Mali",
+  MW: "Malawi",
   NG: "Nigeria",
+  NL: "Netherlands",
   OM: "Oman",
   QA: "Qatar",
   RW: "Rwanda",
   SA: "Saudi Arabia",
-  ZA: "South Africa",
-  SS: "South Sudan",
+  SD: "Sudan",
   SE: "Sweden",
-  AE: "United Arab Emirates",
+  SN: "Senegal",
+  SO: "Somalia",
+  SS: "South Sudan",
+  TD: "Chad",
+  TN: "Tunisia",
+  TZ: "Tanzania",
+  UG: "Uganda",
+  ZA: "South Africa",
+  ZM: "Zambia",
+  ZW: "Zimbabwe"
 }
 
 export async function generateMetadata({ params: { countryCode } }): Promise<Metadata> {
-  const countryName = countryNames[countryCode.toUpperCase()] || countryCode;
+  const region = await getRegion(countryCode);
+  const countryName = countryNames[countryCode.toUpperCase()] || region?.name || countryCode;
 
   return {
     title: `xGlobal Tents Supplier and Manufacturer in ${countryName}`,
@@ -47,7 +69,7 @@ export default async function Home({
 }) {
   const collections = await getCollectionsWithProducts(countryCode)
   const region = await getRegion(countryCode)
-  const countryName = countryNames[countryCode.toUpperCase()] || countryCode;
+  const countryName = countryNames[countryCode.toUpperCase()] || region?.name || countryCode;
 
   if (!collections || !region) {
     return null
