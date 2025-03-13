@@ -15,7 +15,7 @@ const countryNames: { [key: string]: string } = {
   CG: "Congo",
   CI: "Côte d'Ivoire",
   CM: "Cameroon",
-  DE: "Germany",
+  //DE: "Germany",
   DZ: "Algeria",
   EG: "Egypt",
   ET: "Ethiopia",
