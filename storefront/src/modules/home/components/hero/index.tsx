@@ -1,3 +1,4 @@
+/*
 import { Button, Heading } from "@medusajs/ui"
 
 interface HeroProps {
@@ -128,3 +129,4 @@ const Hero: React.FC<HeroProps> = ({ storeUrl, countryName }) => {
 }
 
 export default Hero
+*/
