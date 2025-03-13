@@ -3,9 +3,10 @@ import { Button, Heading } from "@medusajs/ui"
 
 interface HeroProps {
   storeUrl: string;
+  countryName: string;
 }
 
-const Hero: React.FC<HeroProps> = ({ storeUrl }) => {
+const Hero: React.FC<HeroProps> = ({ storeUrl, countryName }) => {
   return (
     <div className="w-full h-full relative border-b border-ui-border-base bg-gradient-to-r from-blue-200 to-blue-300">
       <div className="relative inset-0 z-10 flex flex-col justify-center items-center text-center small:p-32 gap-5">
@@ -14,7 +15,7 @@ const Hero: React.FC<HeroProps> = ({ storeUrl }) => {
             level="h1"
             className="text-3xl leading-10 text-ui-fg-base font-semibold"
           >
-            <br></br> <br></br> The Leading Tent Manufacturer!
+            <br></br> <br></br> The Leading Tent Manufacturer in {countryName}!
             <br></br>
             Products Including Aluminum Tents, Modular Tent Structures, and more.
             <br></br>
