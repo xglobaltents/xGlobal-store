@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Heading } from "@medusajs/ui"
-import FeaturedProducts from './components/featured-products'
+import FeaturedProducts from '../../featured-products'
 import { getCollectionsWithProducts } from '@lib/data/collections'
 import { getRegion } from '@lib/data/regions'
 
