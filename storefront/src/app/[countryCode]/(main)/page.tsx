@@ -34,7 +34,7 @@ export async function generateMetadata({ params: { countryCode } }): Promise<Met
   const region = await getRegion(countryCode)
   const countryName = countryNames[countryCode] || region?.name || countryCode
 
-  if (!region) {
+  if (region) {
     return {
       title: `xGlobal Tents Supplier and Manufacturer in ${countryName}`,
       description: "The Leading Tent Manufacturer, Tents Including Aluminum Tents, Modular Tent Structures",
