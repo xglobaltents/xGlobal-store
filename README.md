@@ -3,7 +3,7 @@
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://avatars.githubusercontent.com/u/197592655?s=48&v=4">
       <source media="(prefers-color-scheme: light)" srcset="https://avatars.githubusercontent.com/u/197592655?s=48&v=4">
-      <img alt="xGlobal logo" src="https://avatars.githubusercontent.com/u/197592655?s=48&v=4" width=40>
+      <img alt="xGlobal logo" src="https://avatars.githubusercontent.com/u/197592655?s=48&v=4" width=25>
     </picture>
   </a>
 </p>
