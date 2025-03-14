@@ -10,7 +10,27 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  // ...existing generateStaticParams code...
+  const regions = await listRegions()
+  if (!regions) return []
+
+  const countryCodes = regions
+    .map((r) => r.countries?.map((c) => c.iso_2))
+    .flat()
+    .filter((code): code is string => Boolean(code))
+
+  const products = await Promise.all(
+    countryCodes.map(async (countryCode) => {
+      const { response } = await getProductsList({ countryCode })
+      return response.products
+    })
+  ).then((productArrays) => productArrays.flat())
+
+  return countryCodes.flatMap((countryCode) =>
+    products.map((product) => ({
+      countryCode,
+      handle: product.handle,
+    }))
+  )
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -28,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // Create Schema.org Product structured data
-  const jsonLd = [{
+  const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
@@ -52,7 +72,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         name: 'xGlobal Tents'
       }
     }
-  }]
+  }
 
   return {
     title: `${product.title} | xGlobal Tents`,
@@ -67,7 +87,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
     },
     other: {
-      'script:ld+json': jsonLd.map(item => JSON.stringify(item))
+      'script:ld+json': [JSON.stringify(jsonLd)]
     }
   }
 }
