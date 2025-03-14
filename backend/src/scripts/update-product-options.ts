@@ -13,10 +13,10 @@ async function updateProductOptions() {
 
     for (const product of products) {
       const sortedOptions = [...product.options].sort((a, b) => {
-        if (a.title === 'Width') return -1
-        if (b.title === 'Width') return 1
-        if (a.title === 'Length') return 1
-        if (b.title === 'Length') return -1
+        if (a.title.toLowerCase() === 'width') return -1
+        if (b.title.toLowerCase() === 'width') return 1
+        if (a.title.toLowerCase() === 'length') return 1
+        if (b.title.toLowerCase() === 'length') return -1
         return 0
       })
 

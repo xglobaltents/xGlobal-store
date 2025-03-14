@@ -26,6 +26,18 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return notFound()
   }
 
+  // Sort options to ensure Width comes before Length
+  const sortedProduct = {
+    ...product,
+    options: [...(product.options || [])].sort((a, b) => {
+      if (a.title.toLowerCase() === 'width') return -1
+      if (b.title.toLowerCase() === 'width') return 1
+      if (a.title.toLowerCase() === 'length') return 1
+      if (b.title.toLowerCase() === 'length') return -1
+      return 0
+    })
+  }
+
   return (
     <>
       <div
@@ -33,11 +45,11 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         data-testid="product-container"
       >
         <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
-          <ProductInfo product={product} />
-          <ProductTabs product={product} />
+          <ProductInfo product={sortedProduct} />
+          <ProductTabs product={sortedProduct} />
         </div>
         <div className="block w-full relative mt-6">
-          <ImageGallery images={product?.images || []} />
+          <ImageGallery images={sortedProduct?.images || []} />
         </div>
         <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
           <ProductOnboardingCta />
@@ -45,12 +57,12 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             fallback={
               <ProductActions
                 disabled={true}
-                product={product}
+                product={sortedProduct}
                 region={region}
               />
             }
           >
-            <ProductActionsWrapper id={product.id} region={region} />
+            <ProductActionsWrapper id={sortedProduct.id} region={region} />
           </Suspense>
         </div>
       </div>
@@ -59,7 +71,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         data-testid="related-products-container"
       >
         <Suspense fallback={<SkeletonRelatedProducts />}>
-          <RelatedProducts product={product} countryCode={countryCode} />
+          <RelatedProducts product={sortedProduct} countryCode={countryCode} />
         </Suspense>
       </div>
     </>
