@@ -5,24 +5,41 @@ const prisma = new PrismaClient()
 async function updateProductOptions() {
   try {
     // Get all products with their options
-    const products = await prisma.product_option.findMany({
-      orderBy: {
-        created_at: 'asc'
+    const products = await prisma.product.findMany({
+      include: {
+        options: true
       }
     })
 
-    // Update the position of options based on title
-    for (const option of products) {
-      const position = option.title === 'Width' ? 0 : 1
-      await prisma.product_option.update({
-        where: { id: option.id },
-        data: { position }
+    for (const product of products) {
+      const sortedOptions = [...product.options].sort((a, b) => {
+        if (a.title === 'Width') return -1
+        if (b.title === 'Width') return 1
+        if (a.title === 'Length') return 1
+        if (b.title === 'Length') return -1
+        return 0
       })
+
+      // Update each option's position
+      for (let i = 0; i < sortedOptions.length; i++) {
+        await prisma.product_option.update({
+          where: {
+            id: sortedOptions[i].id
+          },
+          data: {
+            position: i,
+            metadata: {
+              ...sortedOptions[i].metadata,
+              display_order: i
+            }
+          }
+        })
+      }
     }
 
-    console.log('Successfully updated product options order')
+    console.log("Successfully updated product options order")
   } catch (error) {
-    console.error('Error updating options:', error)
+    console.error("Error updating options:", error)
   } finally {
     await prisma.$disconnect()
   }
