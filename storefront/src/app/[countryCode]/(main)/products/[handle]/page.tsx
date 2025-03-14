@@ -47,7 +47,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound()
   }
 
-  // Create Schema.org Product structured data
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -104,7 +103,6 @@ export default async function ProductPage({ params }: Props) {
     notFound()
   }
 
-  // Create Schema.org Product structured data for client-side
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -137,6 +135,7 @@ export default async function ProductPage({ params }: Props) {
         product={product}
         region={region}
         countryCode={params.countryCode}
+        optionsOrder={['Width', 'Length']}
       />
       <script
         type="application/ld+json"
