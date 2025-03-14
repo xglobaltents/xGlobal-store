@@ -107,11 +107,13 @@ export default async function ProductPage({ params }: Props) {
   const sortedProduct = {
     ...product,
     options: [...(product.options || [])].sort((a, b) => {
-      if (a.title === 'Width') return -1
-      if (b.title === 'Width') return 1
-      if (a.title === 'Length') return 1
-      if (b.title === 'Length') return -1
-      return 0
+      const order = ['Width', 'Length']
+      const aIndex = order.indexOf(a.title)
+      const bIndex = order.indexOf(b.title)
+      if (aIndex === -1 && bIndex === -1) return 0
+      if (aIndex === -1) return 1
+      if (bIndex === -1) return -1
+      return aIndex - bIndex
     })
   }
 
