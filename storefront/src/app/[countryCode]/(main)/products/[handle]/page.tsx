@@ -99,16 +99,51 @@ export default async function ProductPage({ params }: Props) {
     notFound()
   }
 
-  const pricedProduct = await getProductByHandle(params.handle, region.id)
-  if (!pricedProduct) {
+  const product = await getProductByHandle(params.handle, region.id)
+  if (!product) {
     notFound()
   }
 
+  // Create Schema.org Product structured data for client-side
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description || product.title,
+    image: product.thumbnail ? [product.thumbnail] : [],
+    sku: product.id,
+    mpn: product.id,
+    brand: {
+      '@type': 'Brand',
+      name: 'xGlobal Tents'
+    },
+    offers: {
+      '@type': 'Offer',
+      availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      price: product.variants?.[0]?.prices?.[0]?.amount ?? 0,
+      priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
+      priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
+      seller: {
+        '@type': 'Organization',
+        name: 'xGlobal Tents'
+      }
+    }
+  }
+
   return (
-    <ProductTemplate
-      product={pricedProduct}
-      region={region}
-      countryCode={params.countryCode}
-    />
+    <>
+      <ProductTemplate
+        product={product}
+        region={region}
+        countryCode={params.countryCode}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+    </>
   )
 }
