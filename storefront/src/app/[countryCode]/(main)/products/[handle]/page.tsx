@@ -9,38 +9,7 @@ type Props = {
   params: { countryCode: string; handle: string }
 }
 
-export async function generateStaticParams() {
-  const countryCodes = await listRegions().then(
-    (regions) =>
-      regions
-        ?.map((r) => r.countries?.map((c) => c.iso_2))
-        .flat()
-        .filter(Boolean) as string[]
-  )
-
-  if (!countryCodes) {
-    return null
-  }
-
-  const products = await Promise.all(
-    countryCodes.map((countryCode) => {
-      return getProductsList({ countryCode })
-    })
-  ).then((responses) =>
-    responses.map(({ response }) => response.products).flat()
-  )
-
-  const staticParams = countryCodes
-    ?.map((countryCode) =>
-      products.map((product) => ({
-        countryCode,
-        handle: product.handle,
-      }))
-    )
-    .flat()
-
-  return staticParams
-}
+// ...existing generateStaticParams code...
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = params
@@ -56,14 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound()
   }
 
-  // Add Schema.org Product structured data with safe property access
+  // Create Schema.org Product structured data
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description || product.title,
-    image: product.thumbnail || [],
+    image: product.thumbnail ? [product.thumbnail] : [],
     sku: product.id,
+    mpn: product.id,
     brand: {
       '@type': 'Brand',
       name: 'xGlobal Tents'
@@ -71,10 +41,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     offers: {
       '@type': 'Offer',
       availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      // Add null checks for variants and prices
       price: product.variants?.[0]?.prices?.[0]?.amount ?? 0,
       priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
       seller: {
         '@type': 'Organization',
         name: 'xGlobal Tents'
@@ -89,9 +59,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${product.title} | xGlobal Tents`,
       description: `${product.description || product.title}`,
       images: product.thumbnail ? [product.thumbnail] : [],
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
     },
     other: {
-      'script:ld+json': JSON.stringify(jsonLd),
+      'script:ld+json': [JSON.stringify(jsonLd)]
     }
   }
 }
