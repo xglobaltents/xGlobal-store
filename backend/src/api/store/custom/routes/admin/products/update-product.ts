@@ -1,5 +1,5 @@
 import { 
-    ProductService, 
+    ProductService,
     Request, 
     Response 
   } from "@medusajs/medusa"
@@ -14,23 +14,32 @@ import {
       const { id } = req.params
       const data = req.body
   
-      // Sort options if present
+      // Update the options order in metadata first
+      await productService.update(id, {
+        metadata: {
+          options_order: ['Width', 'Length']
+        }
+      })
+  
+      // Then update the options positions
       if (data.options) {
-        data.options = data.options.sort((a, b) => {
+        const sortedOptions = data.options.sort((a, b) => {
           if (a.title === 'Width') return -1
           if (b.title === 'Width') return 1
           if (a.title === 'Length') return 1
           if (b.title === 'Length') return -1
           return 0
         })
+  
+        for (let i = 0; i < sortedOptions.length; i++) {
+          await productService.updateOption(id, sortedOptions[i].id, {
+            position: i
+          })
+        }
       }
   
-      const product = await productService.update(id, {
-        ...data,
-        metadata: {
-          ...data.metadata,
-          options_order: ['Width', 'Length']
-        }
+      const product = await productService.retrieve(id, {
+        relations: ['options']
       })
   
       res.json({ product })
