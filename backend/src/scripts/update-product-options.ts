@@ -1,15 +1,15 @@
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { getConnection } from "typeorm"
+import { Product } from "../models/product"
+import { ProductOption } from "../models/product-option"
 
 async function updateProductOptions() {
+  const connection = getConnection()
+  const productRepository = connection.getRepository(Product)
+  const productOptionRepository = connection.getRepository(ProductOption)
+
   try {
     // Get all products with their options
-    const products = await prisma.product.findMany({
-      include: {
-        options: true
-      }
-    })
+    const products = await productRepository.find({ relations: ["options"] })
 
     for (const product of products) {
       const sortedOptions = [...product.options].sort((a, b) => {
@@ -22,16 +22,11 @@ async function updateProductOptions() {
 
       // Update each option's position
       for (let i = 0; i < sortedOptions.length; i++) {
-        await prisma.product_option.update({
-          where: {
-            id: sortedOptions[i].id
-          },
-          data: {
-            position: i,
-            metadata: {
-              ...sortedOptions[i].metadata,
-              display_order: i
-            }
+        await productOptionRepository.update(sortedOptions[i].id, {
+          position: i,
+          metadata: {
+            ...sortedOptions[i].metadata,
+            display_order: i
           }
         })
       }
@@ -41,7 +36,7 @@ async function updateProductOptions() {
   } catch (error) {
     console.error("Error updating options:", error)
   } finally {
-    await prisma.$disconnect()
+    await connection.close()
   }
 }
 
