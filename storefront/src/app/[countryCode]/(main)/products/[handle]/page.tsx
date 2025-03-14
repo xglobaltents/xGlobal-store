@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound()
   }
 
-  // Add Schema.org Product structured data
+  // Add Schema.org Product structured data with safe property access
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -71,8 +71,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     offers: {
       '@type': 'Offer',
       availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: product.variants[0]?.prices[0]?.amount || 0,
-      priceCurrency: region.currency_code?.toUpperCase(),
+      // Add null checks for variants and prices
+      price: product.variants?.[0]?.prices?.[0]?.amount ?? 0,
+      priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       seller: {
         '@type': 'Organization',
@@ -83,10 +84,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${product.title} | xGlobal Tents`,
-    description: `${product.title}`,
+    description: `${product.description || product.title}`,
     openGraph: {
       title: `${product.title} | xGlobal Tents`,
-      description: `${product.title}`,
+      description: `${product.description || product.title}`,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
     other: {
