@@ -40,8 +40,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">
         {/* Product Info Column */}
         <div className="small:col-span-5 small:sticky small:top-20 py-8">
-          <h1 className="text-2xl font-bold mb-4">{sortedProduct.title}</h1>
-          <p className="text-gray-700 mb-6">{sortedProduct.description}</p>
           <ProductInfo product={sortedProduct} />
           <div className="mt-8">
             <ProductTabs product={sortedProduct} />
@@ -50,9 +48,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
 
         {/* Image Gallery Column */}
         <div className="small:col-span-4 h-full py-8">
-          <div className="sticky top-20">
-            <ImageGallery images={sortedProduct.images} />
-          </div>
+          <ImageGallery images={sortedProduct.images} />
         </div>
 
         {/* Product Actions Column */}
