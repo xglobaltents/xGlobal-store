@@ -23,56 +23,72 @@ export default async function RelatedProducts({
   const region = await getRegion(countryCode)
 
   if (!region) {
-  const queryParams: StoreProductParamsWithTags = {}
+    return null
   }
 
-  // edit this function to define your related products logic
-  const queryParams: StoreProductParamsWithTags = {}
-  if (region?.id) {
-    queryParams.region_id = region.id
+  // Related products query parameters
+  const queryParams: StoreProductParamsWithTags = {
+    region_id: region.id,
+    is_giftcard: false,
+    limit: 4 // Limit to 4 related products
   }
+
+  // First try to get products from same collection
   if (product.collection_id) {
     queryParams.collection_id = [product.collection_id]
   }
+
+  // Then try products with same tags
   const productWithTags = product as StoreProductWithTags
-  if (productWithTags.tags) {
+  if (productWithTags.tags?.length) {
     queryParams.tags = productWithTags.tags
       .map((t) => t.value)
       .filter(Boolean) as string[]
   }
-  queryParams.is_giftcard = false
 
-  const products = await getProductsList({
-    queryParams,
-    countryCode,
-  }).then(({ response }) => {
-    return response.products.filter(
-      (responseProduct) => responseProduct.id !== product.id
-    )
-  })
-
-  if (!products.length) {
-    return null
+  // If no collection or tags, try getting products from same category
+  if (!product.collection_id && !productWithTags.tags?.length) {
+    if (product.categories?.[0]?.id) {
+      queryParams.category_id = [product.categories[0].id]
+    }
   }
 
-  return (
-    <div className="product-page-constraint">
-      <div className="flex flex-col items-center text-center mb-16">
-        <span className="text-base-regular text-gray-600 mb-6">
-          Related tents
-        </span>
-        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-          You might also want to check out these tents.
-        </p>
-      </div>
+  try {
+    const { response } = await getProductsList({
+      queryParams,
+      countryCode,
+    })
 
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {products.map((product) => (
-          <li key={product.id}>
-            {region && <Product region={region} product={product} />}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
+    const products = response.products.filter(
+      (p) => p.id !== product.id // Exclude current product
+    ).slice(0, 4) // Ensure we only show 4 products
+
+    if (!products.length) {
+      return null
+    }
+
+    return (
+      <div className="product-page-constraint py-12 border-t border-gray-200">
+        <div className="flex flex-col items-center text-center mb-8">
+          <span className="text-base-regular text-gray-600 mb-6">
+            Related Tents
+          </span>
+          <p className="text-2xl-regular text-ui-fg-base max-w-lg">
+            You might also want to check out these tents
+          </p>
+        </div>
+
+        <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
+          {products.map((p) => (
+            <li key={p.id}>
+              <Product region={region} product={p} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  } catch (error) {
+    console.error("Error fetching related products:", error)
+    return null
+  }
 }
