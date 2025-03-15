@@ -1,9 +1,10 @@
-import React, { Suspense } from "react"
+import React from "react"
 import { HttpTypes } from "@medusajs/types"
 import ProductActions from "@modules/products/components/product-actions"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import ProductInfo from "./product-info"
 import ImageGallery from "@modules/products/components/image-gallery"
+import ProductTabs from "@modules/products/components/product-tabs"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -35,19 +36,40 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   return (
-    <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
-      <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
-        <ProductInfo product={sortedProduct} />
-      </div>
-      <div className="block w-full relative mt-6">
-        <ImageGallery images={sortedProduct.images} />
-      </div>
-      <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-        <ProductActionsWrapper 
-          id={sortedProduct.id} 
-          region={region}
-          initialProduct={sortedProduct}
-        />
+    <div className="content-container flex flex-col py-6 relative">
+      <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">
+        {/* Product Info Column */}
+        <div className="small:col-span-5 small:sticky small:top-20 py-8">
+          <h1 className="text-2xl font-bold mb-4">{sortedProduct.title}</h1>
+          <p className="text-gray-700 mb-6">{sortedProduct.description}</p>
+          <ProductInfo product={sortedProduct} />
+          <div className="mt-8">
+            <ProductTabs product={sortedProduct} />
+          </div>
+        </div>
+
+        {/* Image Gallery Column */}
+        <div className="small:col-span-4 h-full py-8">
+          <ImageGallery images={sortedProduct.images} />
+        </div>
+
+        {/* Product Actions Column */}
+        <div className="small:col-span-3 small:sticky small:top-20 py-8">
+          <ProductActionsWrapper 
+            id={sortedProduct.id} 
+            region={region}
+            initialProduct={sortedProduct}
+          />
+          {/* Shipping Info */}
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-4">Shipping Information</h3>
+            <div className="text-sm text-gray-700">
+              <p className="mb-2">Free shipping on orders over {region.currency_code?.toUpperCase()} 500</p>
+              <p className="mb-2">Delivery within 5-7 business days</p>
+              <p>Available for shipping to {region.name}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
