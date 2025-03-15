@@ -50,7 +50,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
 
         {/* Image Gallery Column */}
         <div className="small:col-span-4 h-full py-8">
-          <ImageGallery images={sortedProduct.images} />
+          <div className="sticky top-20">
+            <ImageGallery images={sortedProduct.images} />
+          </div>
         </div>
 
         {/* Product Actions Column */}
@@ -60,15 +62,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
             region={region}
             initialProduct={sortedProduct}
           />
-          {/* Shipping Info */}
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Shipping Information</h3>
-            <div className="text-sm text-gray-700">
-              <p className="mb-2">Free shipping on orders over {region.currency_code?.toUpperCase()} 500</p>
-              <p className="mb-2">Delivery within 5-7 business days</p>
-              <p>Available for shipping to {region.name}</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
