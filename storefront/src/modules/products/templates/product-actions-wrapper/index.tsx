@@ -21,6 +21,7 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
         const { product: fetchedProduct } = await getProductById(id)
         
         if (fetchedProduct) {
+          // Ensure variants and options are arrays
           const sortedProduct = {
             ...fetchedProduct,
             variants: fetchedProduct.variants || [],
@@ -46,7 +47,14 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
     }
   }, [id])
 
-  if (isLoading || !product?.variants?.length) {
+  // Show loading state instead of null
+  if (isLoading) {
+    return <ProductActions disabled={true} product={null} region={region} />
+  }
+
+  // Ensure we have a valid product with variants
+  if (!product || !Array.isArray(product.variants) || !product.variants.length) {
+    console.error("Invalid product data:", { product })
     return null
   }
 
