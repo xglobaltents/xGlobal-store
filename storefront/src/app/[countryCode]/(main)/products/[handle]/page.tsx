@@ -11,30 +11,34 @@ type Props = {
 }
 
 type SafeProduct = Omit<HttpTypes.StoreProduct, 'variants' | 'options'> & {
-  variants: HttpTypes.StoreVariant[]
-  options: HttpTypes.StoreProductOption[]
+  variants: NonNullable<HttpTypes.StoreVariant[]>
+  options: NonNullable<HttpTypes.StoreProductOption[]>
 }
 
 // Cache the product fetch to prevent multiple requests
 const getProduct = cache(async (handle: string, regionId: string): Promise<SafeProduct | null> => {
   try {
     const product = await getProductByHandle(handle, regionId)
-    if (!product?.id) return null
-
-    // Ensure we have valid variants and options
-    if (!Array.isArray(product.variants) || !Array.isArray(product.options)) {
-      console.error('Invalid product structure:', { 
-        hasVariants: Array.isArray(product.variants),
-        hasOptions: Array.isArray(product.options)
+    
+    // Early return if no product or invalid product
+    if (!product?.id || !product.variants || !product.options) {
+      console.error('Invalid product data:', { 
+        id: product?.id,
+        hasVariants: Boolean(product?.variants),
+        hasOptions: Boolean(product?.options)
       })
       return null
     }
 
-    // Create a safe product with guaranteed arrays
+    // Ensure variants and options are arrays
+    const variants = Array.isArray(product.variants) ? product.variants : []
+    const options = Array.isArray(product.options) ? product.options : []
+
+    // Create safe product with guaranteed non-null arrays
     const safeProduct: SafeProduct = {
       ...product,
-      variants: product.variants,
-      options: product.options.sort((a, b) => {
+      variants,
+      options: options.sort((a, b) => {
         if (a.title.toLowerCase() === 'width') return -1
         if (b.title.toLowerCase() === 'width') return 1
         if (a.title.toLowerCase() === 'length') return 1
@@ -50,28 +54,6 @@ const getProduct = cache(async (handle: string, regionId: string): Promise<SafeP
   }
 })
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const region = await getRegion(params.countryCode)
-  if (!region) return {}
-
-  const product = await getProduct(params.handle, region.id)
-  if (!product) return {}
-
-  return {
-    title: `${product.title} | xGlobal Tents`,
-    description: product.description || product.title,
-    openGraph: {
-      title: `${product.title} | xGlobal Tents`,
-      description: product.description || product.title,
-      images: product.thumbnail ? [product.thumbnail] : [],
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
-    },
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
-    }
-  }
-}
-
 export default async function ProductPage({ params }: Props) {
   try {
     const region = await getRegion(params.countryCode)
@@ -80,11 +62,15 @@ export default async function ProductPage({ params }: Props) {
     }
 
     const product = await getProduct(params.handle, region.id)
-    if (!product) {
+    if (!product || !product.variants.length) {
+      console.error('Product not found or invalid:', {
+        handle: params.handle,
+        hasProduct: Boolean(product),
+        variantsLength: product?.variants?.length
+      })
       notFound()
     }
 
-    // Only create structuredData if we have valid product data
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'Product',
@@ -97,7 +83,7 @@ export default async function ProductPage({ params }: Props) {
         '@type': 'Brand',
         name: 'xGlobal Tents'
       },
-      offers: product.variants?.[0] ? {
+      offers: {
         '@type': 'Offer',
         availability: product.variants[0].inventory_quantity > 0 
           ? 'https://schema.org/InStock' 
@@ -110,7 +96,7 @@ export default async function ProductPage({ params }: Props) {
           '@type': 'Organization',
           name: 'xGlobal Tents'
         }
-      } : null
+      }
     }
 
     return (
@@ -132,28 +118,4 @@ export default async function ProductPage({ params }: Props) {
     console.error('Error in ProductPage:', error)
     return notFound()
   }
-}
-
-export async function generateStaticParams() {
-  const regions = await listRegions()
-  if (!regions) return []
-
-  const countryCodes = regions
-    .map((r) => r.countries?.map((c) => c.iso_2))
-    .flat()
-    .filter((code): code is string => Boolean(code))
-
-  const products = await Promise.all(
-    countryCodes.map(async (countryCode) => {
-      const { response } = await getProductsList({ countryCode })
-      return response.products
-    })
-  ).then((productArrays) => productArrays.flat())
-
-  return countryCodes.flatMap((countryCode) =>
-    products.map((product) => ({
-      countryCode,
-      handle: product.handle,
-    }))
-  )
 }
