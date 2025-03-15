@@ -3,7 +3,7 @@ import { HttpTypes } from "@medusajs/types"
 import ProductActions from "@modules/products/components/product-actions"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import ProductInfo from "./product-info"
-// ...other imports
+import ImageGallery from "@modules/products/components/image-gallery"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -16,13 +16,15 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   region,
   countryCode,
 }) => {
-  if (!product || !product.id) {
+  if (!product?.id || !Array.isArray(product.variants)) {
     return null
   }
 
-  // Ensure product has sorted options
+  // Ensure product has sorted options and valid arrays
   const sortedProduct = {
     ...product,
+    variants: product.variants || [],
+    images: product.images || [],
     options: [...(product.options || [])].sort((a, b) => {
       if (a.title.toLowerCase() === 'width') return -1
       if (b.title.toLowerCase() === 'width') return 1
@@ -33,25 +35,21 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   return (
-    <>
-      <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
-          <ProductInfo product={sortedProduct} />
-        </div>
-        <div className="block w-full relative mt-6">
-          <ImageGallery images={sortedProduct.images || []} />
-        </div>
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-          <Suspense
-            fallback={
-              <ProductActions disabled={true} product={null} region={region} />
-            }
-          >
-            <ProductActionsWrapper id={sortedProduct.id} region={region} />
-          </Suspense>
-        </div>
+    <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
+      <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
+        <ProductInfo product={sortedProduct} />
       </div>
-    </>
+      <div className="block w-full relative mt-6">
+        <ImageGallery images={sortedProduct.images} />
+      </div>
+      <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
+        <ProductActionsWrapper 
+          id={sortedProduct.id} 
+          region={region}
+          initialProduct={sortedProduct}
+        />
+      </div>
+    </div>
   )
 }
 

@@ -8,11 +8,16 @@ import { getProductById } from "@lib/data/products"
 type ProductActionsWrapperProps = {
   id: string
   region: HttpTypes.StoreRegion
+  initialProduct: HttpTypes.StoreProduct
 }
 
-const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, region }) => {
-  const [product, setProduct] = useState<HttpTypes.StoreProduct | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ 
+  id, 
+  region,
+  initialProduct 
+}) => {
+  const [product, setProduct] = useState<HttpTypes.StoreProduct>(initialProduct)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -21,7 +26,6 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
         const { product: fetchedProduct } = await getProductById(id)
         
         if (fetchedProduct) {
-          // Ensure variants and options are arrays
           const sortedProduct = {
             ...fetchedProduct,
             variants: fetchedProduct.variants || [],
@@ -42,19 +46,17 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
       }
     }
 
-    if (id) {
+    // Only fetch if we have an ID
+    if (id && id !== product?.id) {
       fetchProduct()
     }
-  }, [id])
+  }, [id, product?.id])
 
-  // Show loading state instead of null
   if (isLoading) {
-    return <ProductActions disabled={true} product={null} region={region} />
+    return <ProductActions disabled={true} product={product} region={region} />
   }
 
-  // Ensure we have a valid product with variants
-  if (!product || !Array.isArray(product.variants) || !product.variants.length) {
-    console.error("Invalid product data:", { product })
+  if (!product?.variants?.length) {
     return null
   }
 
