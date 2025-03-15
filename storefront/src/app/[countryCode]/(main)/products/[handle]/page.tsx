@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { cache } from 'react'
 import ProductTemplate from "@modules/products/templates"
+import RelatedProducts from "@modules/products/components/related-products"
 import { getRegion, listRegions } from "@lib/data/regions"
 import { getProductByHandle, getProductsList } from "@lib/data/products"
 import { HttpTypes } from "@medusajs/types"
@@ -13,6 +14,28 @@ type Props = {
 type SafeProduct = Omit<HttpTypes.StoreProduct, 'variants' | 'options'> & {
   variants: NonNullable<HttpTypes.StoreVariant[]>
   options: NonNullable<HttpTypes.StoreProductOption[]>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const region = await getRegion(params.countryCode)
+  if (!region) return {}
+
+  const product = await getProductByHandle(params.handle, region.id)
+  if (!product) return {}
+
+  return {
+    title: `${product.title} | xGlobal Tents`,
+    description: product.description || product.title,
+    openGraph: {
+      title: `${product.title} | xGlobal Tents`,
+      description: product.description || product.title,
+      images: product.thumbnail ? [product.thumbnail] : [],
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
+    }
+  }
 }
 
 // Cache the product fetch to prevent multiple requests
@@ -106,6 +129,10 @@ export default async function ProductPage({ params }: Props) {
           region={region}
           countryCode={params.countryCode}
         />
+        <RelatedProducts 
+          product={product}
+          countryCode={params.countryCode}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -118,4 +145,28 @@ export default async function ProductPage({ params }: Props) {
     console.error('Error in ProductPage:', error)
     return notFound()
   }
+}
+
+export async function generateStaticParams() {
+  const regions = await listRegions()
+  if (!regions) return []
+
+  const countryCodes = regions
+    .map((r) => r.countries?.map((c) => c.iso_2))
+    .flat()
+    .filter((code): code is string => Boolean(code))
+
+  const products = await Promise.all(
+    countryCodes.map(async (countryCode) => {
+      const { response } = await getProductsList({ countryCode })
+      return response.products
+    })
+  ).then((productArrays) => productArrays.flat())
+
+  return countryCodes.flatMap((countryCode) =>
+    products.map((product) => ({
+      countryCode,
+      handle: product.handle,
+    }))
+  )
 }
