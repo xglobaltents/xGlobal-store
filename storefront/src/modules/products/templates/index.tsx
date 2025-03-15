@@ -39,25 +39,31 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     <div className="content-container flex flex-col py-6 relative">
       <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">
         {/* Product Info Column */}
-        <div className="small:col-span-5 small:sticky small:top-20 py-8">
-          <ProductInfo product={sortedProduct} />
-          <div className="mt-8">
-            <ProductTabs product={sortedProduct} />
+        <div className="small:col-span-5 py-8">
+          <div className="sticky top-20">
+            <ProductInfo product={sortedProduct} />
+            <div className="mt-8">
+              <ProductTabs product={sortedProduct} />
+            </div>
           </div>
         </div>
 
         {/* Image Gallery Column */}
-        <div className="small:col-span-4 h-full py-8">
-          <ImageGallery images={sortedProduct.images} />
+        <div className="small:col-span-4 h-full py-8 flex justify-center">
+          <div className="w-full max-w-[600px]">
+            <ImageGallery images={sortedProduct.images} />
+          </div>
         </div>
 
         {/* Product Actions Column */}
-        <div className="small:col-span-3 small:sticky small:top-20 py-8">
-          <ProductActionsWrapper 
-            id={sortedProduct.id} 
-            region={region}
-            initialProduct={sortedProduct}
-          />
+        <div className="small:col-span-3 py-8">
+          <div className="sticky top-20">
+            <ProductActionsWrapper 
+              id={sortedProduct.id} 
+              region={region}
+              initialProduct={sortedProduct}
+            />
+          </div>
         </div>
       </div>
     </div>
