@@ -21,17 +21,16 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
         const { product: fetchedProduct } = await getProductById(id)
         
         if (fetchedProduct) {
-          // Sort options to ensure Width comes before Length
           const sortedProduct = {
             ...fetchedProduct,
+            variants: fetchedProduct.variants || [],
             options: [...(fetchedProduct.options || [])].sort((a, b) => {
               if (a.title.toLowerCase() === 'width') return -1
               if (b.title.toLowerCase() === 'width') return 1
               if (a.title.toLowerCase() === 'length') return 1
               if (b.title.toLowerCase() === 'length') return -1
               return 0
-            }),
-            variants: fetchedProduct.variants || [] // Ensure variants is never null
+            })
           }
           setProduct(sortedProduct)
         }
@@ -47,11 +46,7 @@ const ProductActionsWrapper: React.FC<ProductActionsWrapperProps> = ({ id, regio
     }
   }, [id])
 
-  if (isLoading) {
-    return <ProductActions disabled={true} product={null} region={region} />
-  }
-
-  if (!product || !product.variants?.length) {
+  if (isLoading || !product?.variants?.length) {
     return null
   }
 
