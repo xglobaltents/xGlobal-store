@@ -41,10 +41,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const product = await getProductByHandle(handle, region.id)
-
   if (!product) {
     notFound()
   }
+
+  // Ensure variants is always an array
+  const variants = product.variants || []
 
   // Sort the product options to ensure Width comes before Length
   const sortedProduct = {
@@ -56,10 +58,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       if (b.title.toLowerCase() === 'length') return -1
       return 0
     }),
-    variants: product.variants || []
+    variants
   }
 
-  const jsonLd = {
+  const jsonLd = variants.length ? {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: sortedProduct.title,
@@ -71,10 +73,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       '@type': 'Brand',
       name: 'xGlobal Tents'
     },
-    offers: sortedProduct.variants?.length ? {
+    offers: {
       '@type': 'Offer',
       availability: sortedProduct.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: sortedProduct.variants[0]?.prices?.[0]?.amount ?? 0,
+      price: variants[0]?.prices?.[0]?.amount ?? 0,
       priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
@@ -82,8 +84,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         '@type': 'Organization',
         name: 'xGlobal Tents'
       }
-    } : null
-  }
+    }
+  } : null
 
   return {
     title: `${sortedProduct.title} | xGlobal Tents`,
@@ -98,14 +100,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
     },
     other: {
-      'script:ld+json': [JSON.stringify(jsonLd)]
+      'script:ld+json': jsonLd ? [JSON.stringify(jsonLd)] : []
     }
   }
 }
 
 export default async function ProductPage({ params }: Props) {
   const region = await getRegion(params.countryCode)
-
   if (!region) {
     notFound()
   }
@@ -114,6 +115,9 @@ export default async function ProductPage({ params }: Props) {
   if (!product) {
     notFound()
   }
+
+  // Ensure variants is always an array
+  const variants = product.variants || []
 
   // Sort the product options to ensure Width comes before Length
   const sortedProduct = {
@@ -125,10 +129,10 @@ export default async function ProductPage({ params }: Props) {
       if (b.title.toLowerCase() === 'length') return -1
       return 0
     }),
-    variants: product.variants || []
+    variants
   }
 
-  const structuredData = {
+  const structuredData = variants.length ? {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: sortedProduct.title,
@@ -140,10 +144,10 @@ export default async function ProductPage({ params }: Props) {
       '@type': 'Brand',
       name: 'xGlobal Tents'
     },
-    offers: sortedProduct.variants?.length ? {
+    offers: {
       '@type': 'Offer',
       availability: sortedProduct.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: sortedProduct.variants[0]?.prices?.[0]?.amount ?? 0,
+      price: variants[0]?.prices?.[0]?.amount ?? 0,
       priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
@@ -151,8 +155,8 @@ export default async function ProductPage({ params }: Props) {
         '@type': 'Organization',
         name: 'xGlobal Tents'
       }
-    } : null
-  }
+    }
+  } : null
 
   return (
     <>
@@ -161,7 +165,7 @@ export default async function ProductPage({ params }: Props) {
         region={region}
         countryCode={params.countryCode}
       />
-      {structuredData.offers && (
+      {structuredData && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
