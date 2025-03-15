@@ -1,6 +1,5 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
-
 import ProductTemplate from "@modules/products/templates"
 import { getRegion, listRegions } from "@lib/data/regions"
 import { getProductByHandle, getProductsList } from "@lib/data/products"
@@ -47,22 +46,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound()
   }
 
+  // Sort the product options to ensure Width comes before Length
+  const sortedProduct = {
+    ...product,
+    options: [...(product.options || [])].sort((a, b) => {
+      if (a.title.toLowerCase() === 'width') return -1
+      if (b.title.toLowerCase() === 'width') return 1
+      if (a.title.toLowerCase() === 'length') return 1
+      if (b.title.toLowerCase() === 'length') return -1
+      return 0
+    }),
+    variants: product.variants || []
+  }
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.title,
-    description: product.description || product.title,
-    image: product.thumbnail ? [product.thumbnail] : [],
-    sku: product.id,
-    mpn: product.id,
+    name: sortedProduct.title,
+    description: sortedProduct.description || sortedProduct.title,
+    image: sortedProduct.thumbnail ? [sortedProduct.thumbnail] : [],
+    sku: sortedProduct.id,
+    mpn: sortedProduct.id,
     brand: {
       '@type': 'Brand',
       name: 'xGlobal Tents'
     },
-    offers: {
+    offers: sortedProduct.variants?.length ? {
       '@type': 'Offer',
-      availability: product.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: product.variants?.[0]?.prices?.[0]?.amount ?? 0,
+      availability: sortedProduct.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      price: sortedProduct.variants[0]?.prices?.[0]?.amount ?? 0,
       priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
@@ -70,16 +82,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         '@type': 'Organization',
         name: 'xGlobal Tents'
       }
-    }
+    } : null
   }
 
   return {
-    title: `${product.title} | xGlobal Tents`,
-    description: `${product.description || product.title}`,
+    title: `${sortedProduct.title} | xGlobal Tents`,
+    description: `${sortedProduct.description || sortedProduct.title}`,
     openGraph: {
-      title: `${product.title} | xGlobal Tents`,
-      description: `${product.description || product.title}`,
-      images: product.thumbnail ? [product.thumbnail] : [],
+      title: `${sortedProduct.title} | xGlobal Tents`,
+      description: `${sortedProduct.description || sortedProduct.title}`,
+      images: sortedProduct.thumbnail ? [sortedProduct.thumbnail] : [],
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${handle}`,
     },
     alternates: {
@@ -107,14 +119,13 @@ export default async function ProductPage({ params }: Props) {
   const sortedProduct = {
     ...product,
     options: [...(product.options || [])].sort((a, b) => {
-      const order = ['Width', 'Length']
-      const aIndex = order.indexOf(a.title)
-      const bIndex = order.indexOf(b.title)
-      if (aIndex === -1 && bIndex === -1) return 0
-      if (aIndex === -1) return 1
-      if (bIndex === -1) return -1
-      return aIndex - bIndex
-    })
+      if (a.title.toLowerCase() === 'width') return -1
+      if (b.title.toLowerCase() === 'width') return 1
+      if (a.title.toLowerCase() === 'length') return 1
+      if (b.title.toLowerCase() === 'length') return -1
+      return 0
+    }),
+    variants: product.variants || []
   }
 
   const structuredData = {
@@ -129,10 +140,10 @@ export default async function ProductPage({ params }: Props) {
       '@type': 'Brand',
       name: 'xGlobal Tents'
     },
-    offers: {
+    offers: sortedProduct.variants?.length ? {
       '@type': 'Offer',
       availability: sortedProduct.quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      price: sortedProduct.variants?.[0]?.prices?.[0]?.amount ?? 0,
+      price: sortedProduct.variants[0]?.prices?.[0]?.amount ?? 0,
       priceCurrency: region.currency_code?.toUpperCase() ?? 'USD',
       priceValidUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.countryCode}/products/${params.handle}`,
@@ -140,7 +151,7 @@ export default async function ProductPage({ params }: Props) {
         '@type': 'Organization',
         name: 'xGlobal Tents'
       }
-    }
+    } : null
   }
 
   return (
@@ -150,12 +161,14 @@ export default async function ProductPage({ params }: Props) {
         region={region}
         countryCode={params.countryCode}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
-        }}
-      />
+      {structuredData.offers && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+      )}
     </>
   )
 }
