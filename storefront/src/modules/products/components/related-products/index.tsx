@@ -32,7 +32,6 @@ export default async function RelatedProducts({
       countryCode,
     })
 
-    // Filter out current product and limit to 4 items
     const relatedProducts = response.products
       .filter(p => p.id !== product.id)
       .slice(0, 4)
@@ -45,10 +44,8 @@ export default async function RelatedProducts({
       <div 
         className="content-container py-12 border-t border-gray-200"
         style={{ 
-          position: 'relative',
-          zIndex: 1,
-          isolation: 'isolate',
-          marginBottom: '80px' // Add space for mobile actions bar
+          position: 'static',  // Changed from relative
+          marginBottom: '120px' // Increased margin for mobile actions
         }}
       >
         <div className="flex flex-col items-center text-center mb-8">
@@ -60,17 +57,11 @@ export default async function RelatedProducts({
           </p>
         </div>
 
-        <ul 
-          className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8"
-          style={{ position: 'relative', zIndex: 1 }}
-        >
+        <ul className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8">
           {relatedProducts.map((p) => (
             <li 
               key={p.id} 
-              style={{ 
-                position: 'relative',
-                zIndex: 1 
-              }}
+              className="relative"  // Moved to className
             >
               <Product region={region} product={p} />
             </li>
