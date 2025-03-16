@@ -36,10 +36,10 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   return (
-    <div className="content-container flex flex-col py-6 relative">
+    <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
       <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">
         {/* Product Info Column */}
-        <div className="small:col-span-3 py-8">
+        <div className="small:col-span-3 py-8" style={{ position: 'relative', zIndex: 20 }}>
           <div className="sticky top-20">
             <ProductInfo product={sortedProduct} />
             <div className="mt-8">
@@ -49,14 +49,20 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         </div>
 
         {/* Image Gallery Column */}
-        <div className="small:col-span-6 h-full py-8 flex justify-center">
+        <div 
+          className="small:col-span-6 h-full py-8 flex justify-center" 
+          style={{ position: 'relative', zIndex: 10 }}
+        >
           <div className="w-full max-w-[800px]">
             <ImageGallery images={sortedProduct.images} />
           </div>
         </div>
 
         {/* Product Actions Column */}
-        <div className="small:col-span-3 py-8">
+        <div 
+          className="small:col-span-3 py-8" 
+          style={{ position: 'relative', zIndex: 30 }}
+        >
           <div className="sticky top-20">
             <ProductActionsWrapper 
               id={sortedProduct.id} 

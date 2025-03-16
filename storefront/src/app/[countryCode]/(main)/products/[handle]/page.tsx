@@ -38,12 +38,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// Cache the product fetch to prevent multiple requests
 const getProduct = cache(async (handle: string, regionId: string): Promise<SafeProduct | null> => {
   try {
     const product = await getProductByHandle(handle, regionId)
     
-    // Early return if no product or invalid product
     if (!product?.id || !product.variants || !product.options) {
       console.error('Invalid product data:', { 
         id: product?.id,
@@ -53,11 +51,9 @@ const getProduct = cache(async (handle: string, regionId: string): Promise<SafeP
       return null
     }
 
-    // Ensure variants and options are arrays
     const variants = Array.isArray(product.variants) ? product.variants : []
     const options = Array.isArray(product.options) ? product.options : []
 
-    // Create safe product with guaranteed non-null arrays
     const safeProduct: SafeProduct = {
       ...product,
       variants,
@@ -123,23 +119,29 @@ export default async function ProductPage({ params }: Props) {
     }
 
     return (
-      <>
-        <ProductTemplate
-          product={product}
-          region={region}
-          countryCode={params.countryCode}
-        />
-        <RelatedProducts 
-          product={product}
-          countryCode={params.countryCode}
-        />
+      <div className="product-page-wrapper" style={{ isolation: 'isolate', position: 'relative' }}>
+        <div className="product-content" style={{ position: 'relative', zIndex: 50 }}>
+          <ProductTemplate
+            product={product}
+            region={region}
+            countryCode={params.countryCode}
+          />
+        </div>
+        
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <RelatedProducts 
+            product={product}
+            countryCode={params.countryCode}
+          />
+        </div>
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(structuredData),
           }}
         />
-      </>
+      </div>
     )
   } catch (error) {
     console.error('Error in ProductPage:', error)
