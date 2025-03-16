@@ -41,32 +41,39 @@ export default async function RelatedProducts({
     }
 
     return (
-      <div 
-        className="content-container py-12 border-t border-gray-200"
-        style={{ 
-          position: 'static',  // Changed from relative
-          marginBottom: '120px' // Increased margin for mobile actions
-        }}
-      >
-        <div className="flex flex-col items-center text-center mb-8">
-          <span className="text-base-regular text-gray-600 mb-6">
-            Related Tents
-          </span>
-          <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-            You might also want to check out these tents
-          </p>
-        </div>
+      <div className="relative">
+        <div 
+          className="content-container py-12 border-t border-gray-200"
+          style={{ 
+            position: 'relative',
+            zIndex: 0,
+            marginBottom: '120px'
+          }}
+        >
+          <div className="flex flex-col items-center text-center mb-8">
+            <span className="text-base-regular text-gray-600 mb-6">
+              Related Tents
+            </span>
+            <p className="text-2xl-regular text-ui-fg-base max-w-lg">
+              You might also want to check out these tents
+            </p>
+          </div>
 
-        <ul className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8">
-          {relatedProducts.map((p) => (
-            <li 
-              key={p.id} 
-              className="relative"  // Moved to className
-            >
-              <Product region={region} product={p} />
-            </li>
-          ))}
-        </ul>
+          <ul 
+            className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8"
+            style={{ position: 'relative', zIndex: 0 }}
+          >
+            {relatedProducts.map((p) => (
+              <li 
+                key={p.id} 
+                className="block"
+                style={{ position: 'relative', zIndex: 0 }}
+              >
+                <Product region={region} product={p} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     )
   } catch (error) {
