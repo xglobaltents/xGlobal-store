@@ -1,11 +1,9 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { Button, clx } from "@medusajs/ui"
 import React, { Fragment, useMemo } from "react"
-
 import useToggleState from "@lib/hooks/use-toggle-state"
 import ChevronDown from "@modules/common/icons/chevron-down"
 import X from "@modules/common/icons/x"
-
 import { getProductPrice } from "@lib/util/get-product-price"
 import OptionSelect from "./option-select"
 import { HttpTypes } from "@medusajs/types"
@@ -52,7 +50,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-10", {
+        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-50", {
           "pointer-events-none": !show,
         })}
       >
@@ -67,7 +65,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           leaveTo="opacity-0"
         >
           <div
-            className=" z-10 bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 h-full w-full border-t border-gray-200"
+            className="z-50 bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 h-full w-full border-t border-gray-200 shadow-lg"
             data-testid="mobile-actions"
           >
             <div className="flex items-center gap-x-2">
@@ -105,7 +103,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 <div className="flex items-center justify-between w-full">
                   <span>
                     {variant
-                      ? Object.values(options).join(" / ")
+                      ? Object.values(options).join(" / ")
                       : "Select Options"}
                   </span>
                   <ChevronDown />

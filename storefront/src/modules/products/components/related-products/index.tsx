@@ -42,7 +42,7 @@ export default async function RelatedProducts({
     }
 
     return (
-      <div className="content-container py-12 border-t border-gray-200">
+      <div className="content-container py-12 border-t border-gray-200 relative z-0">
         <div className="flex flex-col items-center text-center mb-8">
           <span className="text-base-regular text-gray-600 mb-6">
             Related Tents
@@ -52,9 +52,10 @@ export default async function RelatedProducts({
           </p>
         </div>
 
-        <ul className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8">
+        {/* Add relative positioning and z-0 to ensure proper stacking */}
+        <ul className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8 relative z-0">
           {relatedProducts.map((p) => (
-            <li key={p.id}>
+            <li key={p.id} className="relative z-0">
               <Product region={region} product={p} />
             </li>
           ))}
