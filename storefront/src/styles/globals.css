@@ -114,3 +114,16 @@
 :root:has(.no-doc-scroll) {
   overflow:hidden;
 }
+
+
+.mobile-actions-wrapper {
+  position: relative;
+  z-index: 999;
+  isolation: isolate;
+}
+
+/* Force related products below */
+.related-products {
+  position: relative;
+  z-index: 1;
+}
