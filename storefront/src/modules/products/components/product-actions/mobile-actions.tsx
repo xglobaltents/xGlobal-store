@@ -39,21 +39,25 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   })
 
   const selectedPrice = useMemo(() => {
-    if (!price) {
-      return null
-    }
+    if (!price) return null
     const { variantPrice, cheapestPrice } = price
-
     return variantPrice || cheapestPrice || null
   }, [price])
 
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed z-[9999]", {
+        className={clx("lg:hidden inset-x-0 bottom-0 fixed", {
           "pointer-events-none": !show,
         })}
-        style={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
+        style={{ 
+          position: 'fixed',
+          zIndex: 50,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          isolation: 'isolate'
+        }}
       >
         <Transition
           as={Fragment}
@@ -67,7 +71,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
         >
           <div
             className="bg-white flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 w-full border-t border-gray-200 shadow-2xl"
-            style={{ position: 'relative', zIndex: 9999 }}
+            style={{ position: 'relative', zIndex: 50 }}
             data-testid="mobile-actions"
           >
             <div className="flex items-center gap-x-2">
@@ -132,8 +136,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
       <Transition appear show={state} as={Fragment}>
         <Dialog 
           as="div" 
-          className="relative" 
-          style={{ position: 'relative', zIndex: 99999 }}
+          className="fixed inset-0"
+          style={{ position: 'fixed', zIndex: 75 }}
           onClose={close}
         >
           <Transition.Child
@@ -148,7 +152,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
             <div className="fixed inset-0 bg-gray-700 bg-opacity-75 backdrop-blur-sm" />
           </Transition.Child>
 
-          <div className="fixed bottom-0 inset-x-0" style={{ zIndex: 99999 }}>
+          <div className="fixed bottom-0 inset-x-0">
             <div className="flex min-h-full h-full items-center justify-center text-center">
               <Transition.Child
                 as={Fragment}
@@ -161,7 +165,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
               >
                 <Dialog.Panel
                   className="w-full h-full transform overflow-hidden text-left flex flex-col gap-y-3 bg-white shadow-2xl"
-                  style={{ position: 'relative', zIndex: 99999 }}
+                  style={{ position: 'relative', zIndex: 75 }}
                   data-testid="mobile-actions-modal"
                 >
                   <div className="w-full flex justify-end pr-6 pt-4">
