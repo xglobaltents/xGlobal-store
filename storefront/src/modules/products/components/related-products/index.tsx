@@ -8,6 +8,14 @@ type RelatedProductsProps = {
   countryCode: string
 }
 
+type StoreProductParamsWithTags = HttpTypes.StoreProductParams & {
+  tags?: string[]
+}
+
+type StoreProductWithTags = HttpTypes.StoreProduct & {
+  tags?: { value: string }[]
+}
+
 export default async function RelatedProducts({
   product,
   countryCode,
@@ -15,69 +23,57 @@ export default async function RelatedProducts({
   const region = await getRegion(countryCode)
 
   if (!region) {
-    return null
+  const queryParams: StoreProductParamsWithTags = {}
   }
 
-  const queryParams = {
-    region_id: region.id,
-    category_id: product.categories?.[0]?.id,
-    collection_id: product.collection_id ? [product.collection_id] : undefined,
-    is_giftcard: false,
-    limit: 8,
+  // edit this function to define your related products logic
+  const queryParams: StoreProductParamsWithTags = {}
+  if (region?.id) {
+    queryParams.region_id = region.id
   }
+  if (product.collection_id) {
+    queryParams.collection_id = [product.collection_id]
+  }
+  const productWithTags = product as StoreProductWithTags
+  if (productWithTags.tags) {
+    queryParams.tags = productWithTags.tags
+      .map((t) => t.value)
+      .filter(Boolean) as string[]
+  }
+  queryParams.is_giftcard = false
 
-  try {
-    const { response } = await getProductsList({
-      queryParams,
-      countryCode,
-    })
-
-    const relatedProducts = response.products
-      .filter(p => p.id !== product.id)
-      .slice(0, 4)
-
-    if (!relatedProducts.length) {
-      return null
-    }
-
-    return (
-      <div className="relative">
-        <div 
-          className="content-container py-12 border-t border-gray-200"
-          style={{ 
-            position: 'relative',
-            zIndex: 0,
-            marginBottom: '120px'
-          }}
-        >
-          <div className="flex flex-col items-center text-center mb-8">
-            <span className="text-base-regular text-gray-600 mb-6">
-              Related Tents
-            </span>
-            <p className="text-2xl-regular text-ui-fg-base max-w-lg">
-              You might also want to check out these tents
-            </p>
-          </div>
-
-          <ul 
-            className="grid grid-cols-2 small:grid-cols-4 gap-x-4 gap-y-8"
-            style={{ position: 'relative', zIndex: 0 }}
-          >
-            {relatedProducts.map((p) => (
-              <li 
-                key={p.id} 
-                className="block"
-                style={{ position: 'relative', zIndex: 0 }}
-              >
-                <Product region={region} product={p} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+  const products = await getProductsList({
+    queryParams,
+    countryCode,
+  }).then(({ response }) => {
+    return response.products.filter(
+      (responseProduct) => responseProduct.id !== product.id
     )
-  } catch (error) {
-    console.error("Error fetching related products:", error)
+  })
+
+  if (!products.length) {
     return null
   }
+
+  return (
+    <div className="product-page-constraint">
+      <div className="flex flex-col items-center text-center mb-16">
+        <span className="text-base-regular text-gray-600 mb-6">
+          Related products
+        </span>
+        <p className="text-2xl-regular text-ui-fg-base max-w-lg">
+          You might also want to check out these products.
+        </p>
+      </div>
+
+      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
+        {products.map((product) => (
+          <li key={product.id}>
+            {region && <Product region={region} product={product} />}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
+
