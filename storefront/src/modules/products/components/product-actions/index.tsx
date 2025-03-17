@@ -146,7 +146,7 @@ export default function ProductActions({
           {!selectedVariant
             ? "Select variant"
             : !inStock
-            ? "Out of stock"
+            ? "Increase length - Not available"
             : "Add to cart"}
         </Button>
         <MobileActions
