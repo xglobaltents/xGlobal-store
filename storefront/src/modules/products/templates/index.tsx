@@ -26,15 +26,25 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     ...product,
     variants: [...(product.variants || [])].sort((a, b) => {
       // Extract numbers from variant titles or values
-      const getNumber = (variant: HttpTypes.StoreVariant) => {
+      const getValue = (variant: HttpTypes.StoreVariant) => {
+        // Get value from title or first option
         const value = variant.title || variant.options?.[0]?.value || ''
-        const match = value.match(/^\d+/)
-        return match ? parseInt(match[0], 10) : Infinity
+        // Extract number from anywhere in the string (e.g., "1 Box" -> 1)
+        const match = value.match(/(\d+)/)
+        if (!match) return Infinity
+        return parseInt(match[1], 10)
       }
 
-      const aNum = getNumber(a)
-      const bNum = getNumber(b)
-      return aNum - bNum
+      const aValue = getValue(a)
+      const bValue = getValue(b)
+
+      // Sort numerically first
+      if (aValue !== bValue) {
+        return aValue - bValue
+      }
+
+      // If numbers are equal, sort by full title
+      return (a.title || '').localeCompare(b.title || '')
     }),
     images: product.images || [],
     options: [...(product.options || [])].sort((a, b) => {
