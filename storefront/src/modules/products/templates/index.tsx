@@ -24,21 +24,45 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   const sortedProduct = React.useMemo(() => {
     // Create a copy of variants for sorting
     const sortedVariants = [...product.variants].sort((a, b) => {
-      // Extract numbers from variant titles
-      const aNumber = parseInt((a.title || '').match(/\d+/)?.[0] || '0', 10)
-      const bNumber = parseInt((b.title || '').match(/\d+/)?.[0] || '0', 10)
-      
-      // Compare numbers directly
-      return aNumber - bNumber
+      // Extract numbers from variant options
+      const getOptionNumber = (variant: HttpTypes.StoreVariant) => {
+        const boxOption = variant.options?.find(opt => 
+          opt.value.toLowerCase().includes('box')
+        )
+        if (!boxOption) return Infinity
+        
+        const match = boxOption.value.match(/^(\d+)/)
+        return match ? parseInt(match[1], 10) : Infinity
+      }
+
+      const aNum = getOptionNumber(a)
+      const bNum = getOptionNumber(b)
+
+      return aNum - bNum
     })
-  
+
+    // Sort options to prioritize Box options
+    const sortedOptions = [...(product.options || [])].sort((a, b) => {
+      const aTitle = a.title.toLowerCase()
+      const bTitle = b.title.toLowerCase()
+
+      if (aTitle.includes('box')) return -1
+      if (bTitle.includes('box')) return 1
+      if (aTitle === 'width') return -1
+      if (bTitle === 'width') return 1
+      if (aTitle === 'length') return -1
+      if (bTitle === 'length') return 1
+      return 0
+    })
+
     return {
       ...product,
       variants: sortedVariants,
       images: product.images || [],
-      options: product.options || []
+      options: sortedOptions
     }
   }, [product])
+
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
       <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">

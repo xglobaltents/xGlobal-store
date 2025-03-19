@@ -17,33 +17,22 @@ const ProductOptions: React.FC<OptionProps> = ({
   const sortedValues = React.useMemo(() => {
     // Create a new array to avoid mutating the original
     return [...values].sort((a, b) => {
-      // Function to extract number from string
-      const getNumber = (str: string) => {
-        // Remove any whitespace and try to find a number
-        const cleaned = str.trim()
-        const match = cleaned.match(/^(\d+)/)
-        return match ? parseInt(match[1], 10) : Infinity
-      }
+      // Extract numbers for comparison
+      const aMatch = a.match(/^(\d+)/)
+      const bMatch = b.match(/^(\d+)/)
+      
+      const aNum = aMatch ? parseInt(aMatch[1], 10) : Infinity
+      const bNum = bMatch ? parseInt(bMatch[1], 10) : Infinity
 
-      // Get numeric values
-      const aNum = getNumber(a)
-      const bNum = getNumber(b)
-
-      // Compare numbers
+      // Sort by numbers first
       if (aNum !== bNum) {
         return aNum - bNum
       }
-
-      // If numbers are the same, maintain original order
+      
+      // If numbers are equal, use the original order
       return values.indexOf(a) - values.indexOf(b)
     })
   }, [values])
-
-  // Debug logging to verify sorting
-  React.useEffect(() => {
-    console.log('Original values:', values)
-    console.log('Sorted values:', sortedValues)
-  }, [values, sortedValues])
 
   return (
     <div className="flex flex-col gap-y-3">
