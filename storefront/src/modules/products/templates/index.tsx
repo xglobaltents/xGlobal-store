@@ -21,45 +21,38 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return null
   }
 
-  // Enhanced numeric sorting for variants
-  const sortedProduct = React.useMemo(() => ({
-    ...product,
-    variants: [...(product.variants || [])].sort((a, b) => {
-      // Extract numbers from start of variant titles
-      const getNumericValue = (variant: HttpTypes.StoreVariant) => {
-        const title = variant.title || ''
-        const firstOption = variant.options?.[0]?.value || ''
-        
-        // Try to match number at start of string
-        const titleMatch = title.match(/^(\d+)/)
-        const optionMatch = firstOption.match(/^(\d+)/)
-        
-        // Use the first matched number or fallback to Infinity
-        if (titleMatch) return parseInt(titleMatch[1], 10)
-        if (optionMatch) return parseInt(optionMatch[1], 10)
-        return Infinity
-      }
-
-      const aNum = getNumericValue(a)
-      const bNum = getNumericValue(b)
-
-      // Primary sort by numeric value
-      if (aNum !== bNum) {
-        return aNum - bNum
-      }
-
-      // Secondary sort by title if numbers are equal
-      return (a.title || '').localeCompare(b.title || '')
-    }),
-    images: product.images || [],
-    options: [...(product.options || [])].sort((a, b) => {
-      if (a.title.toLowerCase() === 'width') return -1
-      if (b.title.toLowerCase() === 'width') return 1
-      if (a.title.toLowerCase() === 'length') return 1
-      if (b.title.toLowerCase() === 'length') return -1
-      return 0
+  const sortedProduct = React.useMemo(() => {
+    const variantsCopy = [...product.variants]
+    
+    // Sort variants by extracting numbers from the beginning
+    variantsCopy.sort((a, b) => {
+      const aMatch = a.title?.match(/^(\d+)/) || a.options?.[0]?.value?.match(/^(\d+)/)
+      const bMatch = b.title?.match(/^(\d+)/) || b.options?.[0]?.value?.match(/^(\d+)/)
+      
+      const aNum = aMatch ? parseInt(aMatch[1]) : Infinity
+      const bNum = bMatch ? parseInt(bMatch[1]) : Infinity
+      
+      // Log for debugging
+      console.log(`Comparing: ${a.title}(${aNum}) with ${b.title}(${bNum})`)
+      
+      return aNum - bNum
     })
-  }), [product])
+
+    return {
+      ...product,
+      variants: variantsCopy,
+      images: product.images || [],
+      options: [...(product.options || [])].sort((a, b) => {
+        if (a.title.toLowerCase() === 'width') return -1
+        if (b.title.toLowerCase() === 'width') return 1
+        if (a.title.toLowerCase() === 'length') return 1
+        if (b.title.toLowerCase() === 'length') return -1
+        return 0
+      })
+    }
+  }, [product])
+
+  console.log('Sorted Variants:', sortedProduct.variants.map(v => v.title))
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
