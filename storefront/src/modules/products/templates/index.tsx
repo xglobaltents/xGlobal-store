@@ -21,29 +21,34 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return null
   }
 
-  // Sort variants numerically and ensure valid arrays
-  const sortedProduct = {
+  // Enhanced numeric sorting for variants
+  const sortedProduct = React.useMemo(() => ({
     ...product,
     variants: [...(product.variants || [])].sort((a, b) => {
-      // Extract numbers from variant titles or values
-      const getValue = (variant: HttpTypes.StoreVariant) => {
-        // Get value from title or first option
-        const value = variant.title || variant.options?.[0]?.value || ''
-        // Extract number from anywhere in the string (e.g., "1 Box" -> 1)
-        const match = value.match(/(\d+)/)
-        if (!match) return Infinity
-        return parseInt(match[1], 10)
+      // Extract numbers from start of variant titles
+      const getNumericValue = (variant: HttpTypes.StoreVariant) => {
+        const title = variant.title || ''
+        const firstOption = variant.options?.[0]?.value || ''
+        
+        // Try to match number at start of string
+        const titleMatch = title.match(/^(\d+)/)
+        const optionMatch = firstOption.match(/^(\d+)/)
+        
+        // Use the first matched number or fallback to Infinity
+        if (titleMatch) return parseInt(titleMatch[1], 10)
+        if (optionMatch) return parseInt(optionMatch[1], 10)
+        return Infinity
       }
 
-      const aValue = getValue(a)
-      const bValue = getValue(b)
+      const aNum = getNumericValue(a)
+      const bNum = getNumericValue(b)
 
-      // Sort numerically first
-      if (aValue !== bValue) {
-        return aValue - bValue
+      // Primary sort by numeric value
+      if (aNum !== bNum) {
+        return aNum - bNum
       }
 
-      // If numbers are equal, sort by full title
+      // Secondary sort by title if numbers are equal
       return (a.title || '').localeCompare(b.title || '')
     }),
     images: product.images || [],
@@ -54,7 +59,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       if (b.title.toLowerCase() === 'length') return -1
       return 0
     })
-  }
+  }), [product])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
