@@ -22,21 +22,38 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   const sortedProduct = React.useMemo(() => {
+    // Helper function to extract number from variant
+    const getVariantNumber = (variant: HttpTypes.StoreVariant): number => {
+      // Try to get number from variant title
+      const titleMatch = variant.title?.match(/(\d+)\s*Box/i)
+      if (titleMatch) {
+        return parseInt(titleMatch[1], 10)
+      }
+
+      // Try to get number from first option value
+      const optionValue = variant.options?.[0]?.value
+      const optionMatch = optionValue?.match(/(\d+)\s*Box/i)
+      if (optionMatch) {
+        return parseInt(optionMatch[1], 10)
+      }
+
+      // If no number found, return Infinity to push to end
+      return Infinity
+    }
+
+    // Sort variants using the extracted numbers
     const sortedVariants = [...product.variants].sort((a, b) => {
-      // Extract numbers from start of variant titles
-      const aMatch = a.title?.match(/^(\d+)/) || a.options?.[0]?.value?.match(/^(\d+)/)
-      const bMatch = b.title?.match(/^(\d+)/) || b.options?.[0]?.value?.match(/^(\d+)/)
+      const aNum = getVariantNumber(a)
+      const bNum = getVariantNumber(b)
 
-      // Convert matches to numbers
-      const aNum = aMatch ? parseInt(aMatch[0]) : Infinity
-      const bNum = bMatch ? parseInt(bMatch[0]) : Infinity
+      // Debug logging
+      console.log(`Comparing: ${a.title} (${aNum}) with ${b.title} (${bNum})`)
 
-      // Sort numerically
       return aNum - bNum
     })
 
-    // Debug log sorted variants
-    console.log('Sorted variants:', sortedVariants.map(v => v.title))
+    // Log final sorted order
+    console.log('Final variant order:', sortedVariants.map(v => v.title))
 
     return {
       ...product,
