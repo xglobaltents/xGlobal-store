@@ -38,36 +38,29 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       }
     }, [innerRef.current?.value])
 
-    // Improved numeric sorting for variants
+    // New sorting logic that prioritizes numeric order
     const sortedChildren = Children.toArray(children).sort((a, b) => {
-      if (isValidElement(a) && isValidElement(b)) {
-        // Extract numeric values, handling all possible formats
-        const extractNumber = (element: React.ReactElement) => {
-          const text = element.props.children?.toString() || ''
-          // Match any number at the start of the string
-          const numberMatch = text.match(/^(\d+)/)
-          if (numberMatch) {
-            return parseInt(numberMatch[1], 10)
-          }
-          // Fallback to value prop if no number in text
-          const valueMatch = element.props.value?.toString().match(/^(\d+)/)
-          return valueMatch ? parseInt(valueMatch[1], 10) : Infinity
-        }
+      if (!isValidElement(a) || !isValidElement(b)) return 0
 
-        const aNum = extractNumber(a)
-        const bNum = extractNumber(b)
-
-        // Sort numerically
-        if (aNum !== bNum) {
-          return aNum - bNum
-        }
-
-        // If numbers are equal, sort by full text
-        const aText = a.props.children?.toString() || ''
-        const bText = b.props.children?.toString() || ''
-        return aText.localeCompare(bText)
+      const getValue = (element: React.ReactElement) => {
+        const value = element.props.value?.toString() || ''
+        const text = element.props.children?.toString() || ''
+        const numValue = text.match(/^\d+/) || value.match(/^\d+/)
+        return numValue ? parseInt(numValue[0], 10) : Infinity
       }
-      return 0
+
+      const aValue = getValue(a)
+      const bValue = getValue(b)
+
+      // Primary sort by numeric value
+      if (aValue !== bValue) {
+        return aValue - bValue
+      }
+
+      // Secondary sort by full text for equal numbers
+      const aText = a.props.children?.toString() || ''
+      const bText = b.props.children?.toString() || ''
+      return aText.localeCompare(bText)
     })
 
     return (
