@@ -16,8 +16,17 @@ const ProductOptions: React.FC<OptionProps> = ({
 }) => {
   const sortedValues = React.useMemo(() => {
     return values.sort((a, b) => {
-      const aNum = parseInt(a.match(/^\d+/)?.[0] || "Infinity")
-      const bNum = parseInt(b.match(/^\d+/)?.[0] || "Infinity")
+      // Extract numbers from strings (e.g., "1 Box" -> 1)
+      const aMatch = a.match(/(\d+)\s*Box/)
+      const bMatch = b.match(/(\d+)\s*Box/)
+      
+      const aNum = aMatch ? parseInt(aMatch[1], 10) : Infinity
+      const bNum = bMatch ? parseInt(bMatch[1], 10) : Infinity
+
+      if (aNum === bNum) {
+        // If numbers are equal, sort alphabetically
+        return a.localeCompare(b)
+      }
       return aNum - bNum
     })
   }, [values])

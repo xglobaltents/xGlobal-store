@@ -22,53 +22,23 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   const sortedProduct = React.useMemo(() => {
-    // Helper function to extract number from variant
-    const getVariantNumber = (variant: HttpTypes.StoreVariant): number => {
-      // Try to get number from variant title
-      const titleMatch = variant.title?.match(/(\d+)\s*Box/i)
-      if (titleMatch) {
-        return parseInt(titleMatch[1], 10)
-      }
-
-      // Try to get number from first option value
-      const optionValue = variant.options?.[0]?.value
-      const optionMatch = optionValue?.match(/(\d+)\s*Box/i)
-      if (optionMatch) {
-        return parseInt(optionMatch[1], 10)
-      }
-
-      // If no number found, return Infinity to push to end
-      return Infinity
-    }
-
-    // Sort variants using the extracted numbers
+    // Create a copy of variants for sorting
     const sortedVariants = [...product.variants].sort((a, b) => {
-      const aNum = getVariantNumber(a)
-      const bNum = getVariantNumber(b)
-
-      // Debug logging
-      console.log(`Comparing: ${a.title} (${aNum}) with ${b.title} (${bNum})`)
-
-      return aNum - bNum
+      // Extract numbers from variant titles
+      const aNumber = parseInt((a.title || '').match(/\d+/)?.[0] || '0', 10)
+      const bNumber = parseInt((b.title || '').match(/\d+/)?.[0] || '0', 10)
+      
+      // Compare numbers directly
+      return aNumber - bNumber
     })
-
-    // Log final sorted order
-    console.log('Final variant order:', sortedVariants.map(v => v.title))
-
+  
     return {
       ...product,
       variants: sortedVariants,
       images: product.images || [],
-      options: [...(product.options || [])].sort((a, b) => {
-        if (a.title.toLowerCase() === 'width') return -1
-        if (b.title.toLowerCase() === 'width') return 1
-        if (a.title.toLowerCase() === 'length') return 1
-        if (b.title.toLowerCase() === 'length') return -1
-        return 0
-      })
+      options: product.options || []
     }
   }, [product])
-
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
       <div className="grid grid-cols-1 small:grid-cols-12 gap-x-8">
