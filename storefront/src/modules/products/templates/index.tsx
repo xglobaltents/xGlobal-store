@@ -45,7 +45,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }, [product.variants])
 
   // Ensure product has sorted options and valid arrays
-  const sortedProduct = {
+  const sortedProduct = React.useMemo(() => ({
     ...product,
     variants: sortedVariants,
     images: product.images || [],
@@ -56,15 +56,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       if (b.title.toLowerCase() === 'length') return -1
       return 0
     })
-  }
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log('Sorted Product:', {
-      variants: sortedProduct.variants.map(v => v.title),
-      options: sortedProduct.options.map(o => o.title)
-    })
-  }, [sortedProduct])
+  }), [product, sortedVariants])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
