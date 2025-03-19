@@ -7,6 +7,8 @@ import {
   useImperativeHandle,
   useRef,
   useState,
+  Children,
+  isValidElement,
 } from "react"
 
 export type NativeSelectProps = {
@@ -36,6 +38,19 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       }
     }, [innerRef.current?.value])
 
+    // Sort children numerically
+    const sortedChildren = Children.toArray(children).sort((a, b) => {
+      if (isValidElement(a) && isValidElement(b)) {
+        // Extract numeric values from option text
+        const aMatch = a.props.children?.toString().match(/\d+/)
+        const bMatch = b.props.children?.toString().match(/\d+/)
+        const aValue = aMatch ? parseInt(aMatch[0]) : 0
+        const bValue = bMatch ? parseInt(bMatch[0]) : 0
+        return aValue - bValue
+      }
+      return 0
+    })
+
     return (
       <div>
         <div
@@ -53,14 +68,14 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             ref={innerRef}
             defaultValue={defaultValue}
             {...props}
-            className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none "
+            className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none"
           >
             <option disabled value="">
               {placeholder}
             </option>
-            {children}
+            {sortedChildren}
           </select>
-          <span className="absolute inset-y-0 flex items-center pointer-events-none ">
+          <span className="absolute inset-y-0 flex items-center pointer-events-none">
             <ChevronUpDown />
           </span>
         </div>
