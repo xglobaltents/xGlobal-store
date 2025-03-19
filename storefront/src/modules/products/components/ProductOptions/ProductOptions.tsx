@@ -15,24 +15,44 @@ const ProductOptions: React.FC<OptionProps> = ({
   updateOption 
 }) => {
   const sortedValues = React.useMemo(() => {
-    // Create a new array to avoid mutating the original
-    return [...values].sort((a, b) => {
-      // Extract numbers for comparison
-      const aMatch = a.match(/^(\d+)/)
-      const bMatch = b.match(/^(\d+)/)
-      
-      const aNum = aMatch ? parseInt(aMatch[1], 10) : Infinity
-      const bNum = bMatch ? parseInt(bMatch[1], 10) : Infinity
+    // Skip sorting for specific option types
+    const optionTitle = option.title.toLowerCase()
+    if (optionTitle === 'width' || optionTitle === 'length') {
+      return values
+    }
 
-      // Sort by numbers first
-      if (aNum !== bNum) {
-        return aNum - bNum
+    return [...values].sort((a, b) => {
+      // Extract numbers from strings
+      const getNumber = (str: string) => {
+        // Look for first number in the string
+        const match = str.match(/\d+/)
+        if (!match) return { num: Infinity, original: str }
+        return {
+          num: parseInt(match[0], 10),
+          original: str
+        }
       }
-      
-      // If numbers are equal, use the original order
+
+      const aValue = getNumber(a)
+      const bValue = getNumber(b)
+
+      // Compare numbers first
+      if (aValue.num !== bValue.num) {
+        return aValue.num - bValue.num
+      }
+
+      // If numbers are equal, maintain original order
       return values.indexOf(a) - values.indexOf(b)
     })
-  }, [values])
+  }, [values, option.title])
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log(`Sorting ${option.title}:`, {
+      original: values,
+      sorted: sortedValues
+    })
+  }, [option.title, values, sortedValues])
 
   return (
     <div className="flex flex-col gap-y-3">
