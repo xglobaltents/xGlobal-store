@@ -22,20 +22,31 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   const sortedProduct = React.useMemo(() => {
+    // Create a new array to sort
     const variantsCopy = [...product.variants]
     
-    // Sort variants by extracting numbers from the beginning
+    // Helper function to extract number from variant
+    const getVariantNumber = (variant: HttpTypes.StoreVariant): number => {
+      // Try to get number from title first
+      const titleNumber = variant.title?.match(/\d+/)?.[0]
+      if (titleNumber) return parseInt(titleNumber, 10)
+
+      // Try to get number from options
+      const optionNumber = variant.options?.[0]?.value?.match(/\d+/)?.[0]
+      if (optionNumber) return parseInt(optionNumber, 10)
+
+      return Infinity
+    }
+
+    // Sort variants by numeric value
     variantsCopy.sort((a, b) => {
-      const aMatch = a.title?.match(/^(\d+)/) || a.options?.[0]?.value?.match(/^(\d+)/)
-      const bMatch = b.title?.match(/^(\d+)/) || b.options?.[0]?.value?.match(/^(\d+)/)
+      const aNumber = getVariantNumber(a)
+      const bNumber = getVariantNumber(b)
       
-      const aNum = aMatch ? parseInt(aMatch[1]) : Infinity
-      const bNum = bMatch ? parseInt(bMatch[1]) : Infinity
+      // Debug logging
+      console.log(`Sorting: ${a.title}(${aNumber}) vs ${b.title}(${bNumber})`)
       
-      // Log for debugging
-      console.log(`Comparing: ${a.title}(${aNum}) with ${b.title}(${bNum})`)
-      
-      return aNum - bNum
+      return aNumber - bNumber
     })
 
     return {
@@ -52,7 +63,13 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     }
   }, [product])
 
-  console.log('Sorted Variants:', sortedProduct.variants.map(v => v.title))
+  // Debug output
+  React.useEffect(() => {
+    console.log('Final sorted variants:', sortedProduct.variants.map(v => ({
+      title: v.title,
+      options: v.options?.map(o => o.value)
+    })))
+  }, [sortedProduct])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
