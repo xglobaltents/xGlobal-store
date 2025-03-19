@@ -22,36 +22,25 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   }
 
   const sortedProduct = React.useMemo(() => {
-    // Create a new array to sort
-    const variantsCopy = [...product.variants]
-    
-    // Helper function to extract number from variant
-    const getVariantNumber = (variant: HttpTypes.StoreVariant): number => {
-      // Try to get number from title first
-      const titleNumber = variant.title?.match(/\d+/)?.[0]
-      if (titleNumber) return parseInt(titleNumber, 10)
+    const sortedVariants = [...product.variants].sort((a, b) => {
+      // Extract numbers from start of variant titles
+      const aMatch = a.title?.match(/^(\d+)/) || a.options?.[0]?.value?.match(/^(\d+)/)
+      const bMatch = b.title?.match(/^(\d+)/) || b.options?.[0]?.value?.match(/^(\d+)/)
 
-      // Try to get number from options
-      const optionNumber = variant.options?.[0]?.value?.match(/\d+/)?.[0]
-      if (optionNumber) return parseInt(optionNumber, 10)
+      // Convert matches to numbers
+      const aNum = aMatch ? parseInt(aMatch[0]) : Infinity
+      const bNum = bMatch ? parseInt(bMatch[0]) : Infinity
 
-      return Infinity
-    }
-
-    // Sort variants by numeric value
-    variantsCopy.sort((a, b) => {
-      const aNumber = getVariantNumber(a)
-      const bNumber = getVariantNumber(b)
-      
-      // Debug logging
-      console.log(`Sorting: ${a.title}(${aNumber}) vs ${b.title}(${bNumber})`)
-      
-      return aNumber - bNumber
+      // Sort numerically
+      return aNum - bNum
     })
+
+    // Debug log sorted variants
+    console.log('Sorted variants:', sortedVariants.map(v => v.title))
 
     return {
       ...product,
-      variants: variantsCopy,
+      variants: sortedVariants,
       images: product.images || [],
       options: [...(product.options || [])].sort((a, b) => {
         if (a.title.toLowerCase() === 'width') return -1
@@ -62,14 +51,6 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       })
     }
   }, [product])
-
-  // Debug output
-  React.useEffect(() => {
-    console.log('Final sorted variants:', sortedProduct.variants.map(v => ({
-      title: v.title,
-      options: v.options?.map(o => o.value)
-    })))
-  }, [sortedProduct])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
