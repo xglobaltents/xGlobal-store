@@ -28,7 +28,6 @@ loadEnv(process.env.NODE_ENV, process.cwd());
 
 const medusaConfig = {
   projectConfig: {
-    // ...existing projectConfig...
     databaseUrl: DATABASE_URL,
     databaseLogging: false,
     redisUrl: REDIS_URL,
@@ -46,13 +45,6 @@ const medusaConfig = {
     disable: SHOULD_DISABLE_ADMIN,
   },
   modules: [
-    // Add variant sort service
-    {
-      key: 'variant_sort',
-      resolve: './src/loaders/variant-sort',
-      options: {}
-    },
-    // Existing modules
     {
       key: Modules.FILE,
       resolve: '@medusajs/file',
@@ -65,7 +57,7 @@ const medusaConfig = {
               endPoint: MINIO_ENDPOINT,
               accessKey: MINIO_ACCESS_KEY,
               secretKey: MINIO_SECRET_KEY,
-              bucket: MINIO_BUCKET
+              bucket: MINIO_BUCKET // Optional, default: medusa-media
             }
           }] : [{
             resolve: '@medusajs/file-local',
@@ -138,7 +130,7 @@ const medusaConfig = {
     }] : [])
   ],
   plugins: [
-    ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
+  ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
       resolve: '@rokmohar/medusa-plugin-meilisearch',
       options: {
         config: {

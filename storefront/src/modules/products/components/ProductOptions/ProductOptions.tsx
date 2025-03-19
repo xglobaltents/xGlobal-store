@@ -15,23 +15,31 @@ const ProductOptions: React.FC<OptionProps> = ({
   updateOption 
 }) => {
   const sortedValues = React.useMemo(() => {
-    // Skip sorting for width/length
+    // Always prioritize width
     const optionTitle = option.title.toLowerCase()
-    if (optionTitle === 'width' || optionTitle === 'length') {
+    if (optionTitle === 'width') {
       return values
     }
 
-    // Sort numerically for other options
+    // Handle numeric sorting (e.g., for box options)
     return [...values].sort((a, b) => {
-      const getNumber = (str: string) => {
-        const match = str.match(/(\d+)/)
+      const getBoxNumber = (str: string) => {
+        // Extract number from strings like "1 Box", "2 Box", etc.
+        const match = str.toLowerCase().match(/(\d+)/)
         return match ? parseInt(match[1], 10) : Infinity
       }
 
-      const aNum = getNumber(a)
-      const bNum = getNumber(b)
+      // Get numeric values
+      const aNum = getBoxNumber(a)
+      const bNum = getBoxNumber(b)
 
-      return aNum - bNum
+      // Sort numerically if both have numbers
+      if (aNum !== Infinity && bNum !== Infinity) {
+        return aNum - bNum
+      }
+
+      // Keep original order for non-numeric values
+      return values.indexOf(a) - values.indexOf(b)
     })
   }, [values, option.title])
 
