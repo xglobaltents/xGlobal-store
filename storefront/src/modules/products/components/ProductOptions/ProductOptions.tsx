@@ -15,21 +15,35 @@ const ProductOptions: React.FC<OptionProps> = ({
   updateOption 
 }) => {
   const sortedValues = React.useMemo(() => {
-    return values.sort((a, b) => {
-      // Extract numbers from strings (e.g., "1 Box" -> 1)
-      const aMatch = a.match(/(\d+)\s*Box/)
-      const bMatch = b.match(/(\d+)\s*Box/)
-      
-      const aNum = aMatch ? parseInt(aMatch[1], 10) : Infinity
-      const bNum = bMatch ? parseInt(bMatch[1], 10) : Infinity
-
-      if (aNum === bNum) {
-        // If numbers are equal, sort alphabetically
-        return a.localeCompare(b)
+    // Create a new array to avoid mutating the original
+    return [...values].sort((a, b) => {
+      // Function to extract number from string
+      const getNumber = (str: string) => {
+        // Remove any whitespace and try to find a number
+        const cleaned = str.trim()
+        const match = cleaned.match(/^(\d+)/)
+        return match ? parseInt(match[1], 10) : Infinity
       }
-      return aNum - bNum
+
+      // Get numeric values
+      const aNum = getNumber(a)
+      const bNum = getNumber(b)
+
+      // Compare numbers
+      if (aNum !== bNum) {
+        return aNum - bNum
+      }
+
+      // If numbers are the same, maintain original order
+      return values.indexOf(a) - values.indexOf(b)
     })
   }, [values])
+
+  // Debug logging to verify sorting
+  React.useEffect(() => {
+    console.log('Original values:', values)
+    console.log('Sorted values:', sortedValues)
+  }, [values, sortedValues])
 
   return (
     <div className="flex flex-col gap-y-3">
