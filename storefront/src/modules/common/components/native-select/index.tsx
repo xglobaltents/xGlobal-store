@@ -38,20 +38,34 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       }
     }, [innerRef.current?.value])
 
-    // Enhanced numeric sorting
+    // Improved numeric sorting for variants
     const sortedChildren = Children.toArray(children).sort((a, b) => {
       if (isValidElement(a) && isValidElement(b)) {
-        // Get values and convert to numbers
-        const getValue = (element: React.ReactElement) => {
-          const value = element.props.value || element.props.children?.toString() || ''
-          const matches = value.match(/^\d+|^\d+[A-Za-z]+|\d+/)
-          return matches ? parseInt(matches[0], 10) : Infinity
+        // Extract numeric values, handling all possible formats
+        const extractNumber = (element: React.ReactElement) => {
+          const text = element.props.children?.toString() || ''
+          // Match any number at the start of the string
+          const numberMatch = text.match(/^(\d+)/)
+          if (numberMatch) {
+            return parseInt(numberMatch[1], 10)
+          }
+          // Fallback to value prop if no number in text
+          const valueMatch = element.props.value?.toString().match(/^(\d+)/)
+          return valueMatch ? parseInt(valueMatch[1], 10) : Infinity
         }
-        
-        const aValue = getValue(a)
-        const bValue = getValue(b)
-        
-        return aValue - bValue
+
+        const aNum = extractNumber(a)
+        const bNum = extractNumber(b)
+
+        // Sort numerically
+        if (aNum !== bNum) {
+          return aNum - bNum
+        }
+
+        // If numbers are equal, sort by full text
+        const aText = a.props.children?.toString() || ''
+        const bText = b.props.children?.toString() || ''
+        return aText.localeCompare(bText)
       }
       return 0
     })
