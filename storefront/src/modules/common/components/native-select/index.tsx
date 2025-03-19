@@ -41,7 +41,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     // Enhanced numeric sorting
     const sortedChildren = Children.toArray(children).sort((a, b) => {
       if (isValidElement(a) && isValidElement(b)) {
-        // Get values and convert to numbers, handling edge cases
+        // Get values and convert to numbers
         const getValue = (element: React.ReactElement) => {
           const value = element.props.value || element.props.children?.toString() || ''
           const matches = value.match(/^\d+|^\d+[A-Za-z]+|\d+/)
@@ -51,10 +51,45 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
         const aValue = getValue(a)
         const bValue = getValue(b)
         
-        // Sort numerically
         return aValue - bValue
       }
       return 0
     })
 
-    // ...rest of the component code remains the same...
+    return (
+      <div className="relative w-full max-w-[800px] mx-auto">
+        <div
+          onFocus={() => innerRef.current?.focus()}
+          onBlur={() => innerRef.current?.blur()}
+          className={clx(
+            "relative flex items-center text-base-regular border border-ui-border-base bg-ui-bg-subtle rounded-md hover:bg-ui-bg-field-hover w-full",
+            className,
+            {
+              "text-ui-fg-muted": isPlaceholder,
+            }
+          )}
+          style={{ maxWidth: '100%' }}
+        >
+          <select
+            ref={innerRef}
+            defaultValue={defaultValue}
+            {...props}
+            className="appearance-none w-full bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none"
+          >
+            <option disabled value="">
+              {placeholder}
+            </option>
+            {sortedChildren}
+          </select>
+          <span className="absolute right-4 inset-y-0 flex items-center pointer-events-none">
+            <ChevronUpDown />
+          </span>
+        </div>
+      </div>
+    )
+  }
+)
+
+NativeSelect.displayName = "NativeSelect"
+
+export default NativeSelect
