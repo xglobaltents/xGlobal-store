@@ -15,31 +15,24 @@ const ProductOptions: React.FC<OptionProps> = ({
   updateOption 
 }) => {
   const sortedValues = React.useMemo(() => {
-    // Always prioritize width
     const optionTitle = option.title.toLowerCase()
+    
+    // Keep width options in original order
     if (optionTitle === 'width') {
       return values
     }
 
-    // Handle numeric sorting (e.g., for box options)
     return [...values].sort((a, b) => {
-      const getBoxNumber = (str: string) => {
-        // Extract number from strings like "1 Box", "2 Box", etc.
-        const match = str.toLowerCase().match(/(\d+)/)
+      // Extract numbers from strings
+      const getNumber = (str: string) => {
+        const match = str.match(/^(\d+)/)
         return match ? parseInt(match[1], 10) : Infinity
       }
 
-      // Get numeric values
-      const aNum = getBoxNumber(a)
-      const bNum = getBoxNumber(b)
+      const aNum = getNumber(a)
+      const bNum = getNumber(b)
 
-      // Sort numerically if both have numbers
-      if (aNum !== Infinity && bNum !== Infinity) {
-        return aNum - bNum
-      }
-
-      // Keep original order for non-numeric values
-      return values.indexOf(a) - values.indexOf(b)
+      return aNum - bNum
     })
   }, [values, option.title])
 
@@ -56,7 +49,6 @@ const ProductOptions: React.FC<OptionProps> = ({
                 ? "border-ui-border-interactive" 
                 : "border-ui-border-base hover:shadow-elevation-card-rest"
             }`}
-            data-testid="option-button"
           >
             {v}
           </button>

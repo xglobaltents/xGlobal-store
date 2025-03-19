@@ -5,6 +5,7 @@ import ProductActionsWrapper from "./product-actions-wrapper"
 import ProductInfo from "./product-info"
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductTabs from "@modules/products/components/product-tabs"
+import { useVariantSorting } from "../../../lib/hooks/use-variant-sorting"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -21,10 +22,32 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return null
   }
 
+  // Sort variants with our custom hook
+  const sortedVariants = React.useMemo(() => {
+    return [...(product.variants || [])].sort((a, b) => {
+      // Helper to extract box number
+      const getBoxNumber = (variant: any) => {
+        const match = variant.title?.match(/(\d+)\s*Box/i)
+        return match ? parseInt(match[1], 10) : Infinity
+      }
+
+      // Get box numbers
+      const aNum = getBoxNumber(a)
+      const bNum = getBoxNumber(b)
+
+      // Sort by numbers if both are box variants
+      if (aNum !== Infinity && bNum !== Infinity) {
+        return aNum - bNum
+      }
+
+      return 0
+    })
+  }, [product.variants])
+
   // Ensure product has sorted options and valid arrays
   const sortedProduct = {
     ...product,
-    variants: product.variants || [],
+    variants: sortedVariants,
     images: product.images || [],
     options: [...(product.options || [])].sort((a, b) => {
       if (a.title.toLowerCase() === 'width') return -1
@@ -34,6 +57,14 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       return 0
     })
   }
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('Sorted Product:', {
+      variants: sortedProduct.variants.map(v => v.title),
+      options: sortedProduct.options.map(o => o.title)
+    })
+  }, [sortedProduct])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
