@@ -21,10 +21,21 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return null
   }
 
-  // Ensure product has sorted options and valid arrays
+  // Sort variants numerically and ensure valid arrays
   const sortedProduct = {
     ...product,
-    variants: product.variants || [],
+    variants: [...(product.variants || [])].sort((a, b) => {
+      // Extract numbers from variant titles or values
+      const getNumber = (variant: HttpTypes.StoreVariant) => {
+        const value = variant.title || variant.options?.[0]?.value || ''
+        const match = value.match(/^\d+/)
+        return match ? parseInt(match[0], 10) : Infinity
+      }
+
+      const aNum = getNumber(a)
+      const bNum = getNumber(b)
+      return aNum - bNum
+    }),
     images: product.images || [],
     options: [...(product.options || [])].sort((a, b) => {
       if (a.title.toLowerCase() === 'width') return -1
