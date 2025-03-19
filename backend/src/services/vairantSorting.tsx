@@ -5,18 +5,25 @@ import { Service } from "medusa-extender"
 @Service()
 class VariantSortService extends TransactionBaseService {
   static identifier = "variant-sort"
+  static LIFE_TIME = 1000 * 60 * 60 // 1 hour
   
   protected readonly manager_: EntityManager
   protected readonly transactionManager_: EntityManager
 
   constructor(container) {
     super(container)
+    this.init()
   }
 
-  async status() {
+  private async init(): Promise<void> {
+    // Initialization logic if needed
+  }
+
+  async getStatus() {
     return {
-      isHealthy: true,
+      is_healthy: true,
       message: "VariantSortService is healthy",
+      timestamp: new Date().toISOString(),
     }
   }
 
