@@ -38,30 +38,23 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
       }
     }, [innerRef.current?.value])
 
-    // New sorting logic that prioritizes numeric order
-    const sortedChildren = Children.toArray(children).sort((a, b) => {
-      if (!isValidElement(a) || !isValidElement(b)) return 0
+    // Convert children to array and sort
+    const childArray = Children.toArray(children)
+      .filter(isValidElement)
+      .sort((a, b) => {
+        const aProps = a.props as { value: string; children: string }
+        const bProps = b.props as { value: string; children: string }
 
-      const getValue = (element: React.ReactElement) => {
-        const value = element.props.value?.toString() || ''
-        const text = element.props.children?.toString() || ''
-        const numValue = text.match(/^\d+/) || value.match(/^\d+/)
-        return numValue ? parseInt(numValue[0], 10) : Infinity
-      }
+        // Extract numbers from start of strings
+        const aMatch = aProps.value?.match(/^\d+/) || aProps.children?.toString().match(/^\d+/)
+        const bMatch = bProps.value?.match(/^\d+/) || bProps.children?.toString().match(/^\d+/)
 
-      const aValue = getValue(a)
-      const bValue = getValue(b)
+        // Convert to numbers for comparison
+        const aNum = aMatch ? parseInt(aMatch[0], 10) : Infinity
+        const bNum = bMatch ? parseInt(bMatch[0], 10) : Infinity
 
-      // Primary sort by numeric value
-      if (aValue !== bValue) {
-        return aValue - bValue
-      }
-
-      // Secondary sort by full text for equal numbers
-      const aText = a.props.children?.toString() || ''
-      const bText = b.props.children?.toString() || ''
-      return aText.localeCompare(bText)
-    })
+        return aNum - bNum
+      })
 
     return (
       <div className="relative w-full max-w-[800px] mx-auto">
@@ -86,7 +79,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             <option disabled value="">
               {placeholder}
             </option>
-            {sortedChildren}
+            {childArray}
           </select>
           <span className="absolute right-4 inset-y-0 flex items-center pointer-events-none">
             <ChevronUpDown />
