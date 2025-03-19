@@ -11,7 +11,22 @@ class VariantSortService extends TransactionBaseService {
 
   async sortVariants<T extends { title?: string; options?: any[] }>(variants: T[]): Promise<T[]> {
     return variants.sort((a, b) => {
-      // Function to extract number from string
+      // Check if either variant has "width" in its options
+      const hasWidth = (variant: T) => {
+        return variant.options?.some(opt => 
+          opt.title?.toLowerCase().includes('width') || 
+          opt.value?.toLowerCase().includes('width')
+        )
+      }
+
+      // Prioritize width options
+      const aHasWidth = hasWidth(a)
+      const bHasWidth = hasWidth(b)
+
+      if (aHasWidth && !bHasWidth) return -1
+      if (!aHasWidth && bHasWidth) return 1
+
+      // For non-width options, sort numerically
       const getNumber = (str?: string): number => {
         if (!str) return Infinity
         const match = str.match(/(\d+)/)
