@@ -1,7 +1,11 @@
 import { TransactionBaseService } from "@medusajs/medusa"
 import { EntityManager } from "typeorm"
+import { Service } from "medusa-extender"
 
+@Service()
 class VariantSortService extends TransactionBaseService {
+  static identifier = "variant-sort"
+  
   protected readonly manager_: EntityManager
   protected readonly transactionManager_: EntityManager
 
@@ -9,7 +13,18 @@ class VariantSortService extends TransactionBaseService {
     super(container)
   }
 
+  async status() {
+    return {
+      isHealthy: true,
+      message: "VariantSortService is healthy",
+    }
+  }
+
   async sortVariants<T extends { title?: string; options?: any[] }>(variants: T[]): Promise<T[]> {
+    if (!Array.isArray(variants)) {
+      return []
+    }
+
     // First separate width variants from others
     const widthVariants: T[] = []
     const otherVariants: T[] = []
