@@ -52,7 +52,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     })
 
     return (
-      <div className="w-full">
+      <div className="relative w-full max-w-[800px] mx-auto">
         <div
           onFocus={() => innerRef.current?.focus()}
           onBlur={() => innerRef.current?.blur()}
@@ -63,12 +63,13 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
               "text-ui-fg-muted": isPlaceholder,
             }
           )}
+          style={{ maxWidth: '100%' }}
         >
           <select
             ref={innerRef}
             defaultValue={defaultValue}
             {...props}
-            className="appearance-none flex-1 bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none w-full"
+            className="appearance-none w-full bg-transparent border-none px-4 py-2.5 transition-colors duration-150 outline-none"
           >
             <option disabled value="">
               {placeholder}
