@@ -10,43 +10,55 @@ class VariantSortService extends TransactionBaseService {
   }
 
   async sortVariants<T extends { title?: string; options?: any[] }>(variants: T[]): Promise<T[]> {
-    return variants.sort((a, b) => {
-      // Check if either variant has "width" in its options
-      const hasWidth = (variant: T) => {
-        return variant.options?.some(opt => 
+    // First separate width variants from others
+    const widthVariants: T[] = []
+    const otherVariants: T[] = []
+
+    variants.forEach(variant => {
+      // Check for width in options or title
+      const hasWidth = variant.options?.some(opt => 
+        opt.title?.toLowerCase().includes('width') || 
+        opt.value?.toLowerCase().includes('width')
+      ) || variant.title?.toLowerCase().includes('width')
+
+      if (hasWidth) {
+        widthVariants.push(variant)
+      } else {
+        otherVariants.push(variant)
+      }
+    })
+
+    // Sort width variants by their numeric values if any
+    widthVariants.sort((a, b) => {
+      const getWidthNumber = (variant: T) => {
+        const widthOption = variant.options?.find(opt => 
           opt.title?.toLowerCase().includes('width') || 
           opt.value?.toLowerCase().includes('width')
         )
+        const value = widthOption?.value || variant.title || ''
+        const match = value.match(/(\d+)/)
+        return match ? parseInt(match[1], 10) : Infinity
       }
 
-      // Prioritize width options
-      const aHasWidth = hasWidth(a)
-      const bHasWidth = hasWidth(b)
+      return getWidthNumber(a) - getWidthNumber(b)
+    })
 
-      if (aHasWidth && !bHasWidth) return -1
-      if (!aHasWidth && bHasWidth) return 1
-
-      // For non-width options, sort numerically
+    // Sort other variants by numeric values
+    otherVariants.sort((a, b) => {
       const getNumber = (str?: string): number => {
         if (!str) return Infinity
         const match = str.match(/(\d+)/)
         return match ? parseInt(match[1], 10) : Infinity
       }
 
-      // Try to get number from variant title first
-      let aNum = getNumber(a.title)
-      let bNum = getNumber(b.title)
-
-      // If no numbers in titles, try options
-      if (aNum === Infinity && a.options?.length) {
-        aNum = getNumber(a.options[0].value)
-      }
-      if (bNum === Infinity && b.options?.length) {
-        bNum = getNumber(b.options[0].value)
-      }
+      const aNum = getNumber(a.title) || getNumber(a.options?.[0]?.value)
+      const bNum = getNumber(b.title) || getNumber(b.options?.[0]?.value)
 
       return aNum - bNum
     })
+
+    // Combine the sorted arrays with width variants first
+    return [...widthVariants, ...otherVariants]
   }
 }
 
