@@ -28,7 +28,7 @@ class VariantSortService extends TransactionBaseService {
       }
     })
 
-    // Sort width variants by their numeric values if any
+    // Sort width variants numerically
     widthVariants.sort((a, b) => {
       const getWidthNumber = (variant: T) => {
         const widthOption = variant.options?.find(opt => 
@@ -43,21 +43,27 @@ class VariantSortService extends TransactionBaseService {
       return getWidthNumber(a) - getWidthNumber(b)
     })
 
-    // Sort other variants by numeric values
+    // Sort other variants by box numbers
     otherVariants.sort((a, b) => {
-      const getNumber = (str?: string): number => {
-        if (!str) return Infinity
-        const match = str.match(/(\d+)/)
-        return match ? parseInt(match[1], 10) : Infinity
+      const getBoxNumber = (variant: T): number => {
+        // Try to get number from title first
+        const titleMatch = variant.title?.match(/(\d+)\s*Box/i)
+        if (titleMatch) return parseInt(titleMatch[1], 10)
+
+        // Try to get number from options
+        const boxOption = variant.options?.find(opt => 
+          opt.value?.toLowerCase().includes('box')
+        )
+        const optionMatch = boxOption?.value.match(/(\d+)\s*Box/i)
+        if (optionMatch) return parseInt(optionMatch[1], 10)
+
+        return Infinity
       }
 
-      const aNum = getNumber(a.title) || getNumber(a.options?.[0]?.value)
-      const bNum = getNumber(b.title) || getNumber(b.options?.[0]?.value)
-
-      return aNum - bNum
+      return getBoxNumber(a) - getBoxNumber(b)
     })
 
-    // Combine the sorted arrays with width variants first
+    // Combine arrays with width variants first
     return [...widthVariants, ...otherVariants]
   }
 }
