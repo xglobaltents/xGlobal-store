@@ -5,7 +5,6 @@ import ProductActionsWrapper from "./product-actions-wrapper"
 import ProductInfo from "./product-info"
 import ImageGallery from "@modules/products/components/image-gallery"
 import ProductTabs from "@modules/products/components/product-tabs"
-import { useVariantSorting } from "../../../lib/hooks/use-variant-sorting"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -22,41 +21,39 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return null
   }
 
-  // Sort variants with our custom hook
-  const sortedVariants = React.useMemo(() => {
-    return [...(product.variants || [])].sort((a, b) => {
-      // Helper to extract box number
-      const getBoxNumber = (variant: any) => {
-        const match = variant.title?.match(/(\d+)\s*Box/i)
+  // Combined sorting logic in one useMemo
+  const sortedProduct = React.useMemo(() => {
+    // Sort variants by box numbers (1 Box, 2 Box, 3 Box)
+    const sortedVariants = [...(product.variants || [])].sort((a, b) => {
+      const getNumber = (str?: string) => {
+        const match = str?.match(/(\d+)\s*Box/i)
         return match ? parseInt(match[1], 10) : Infinity
       }
 
-      // Get box numbers
-      const aNum = getBoxNumber(a)
-      const bNum = getBoxNumber(b)
+      const aNum = getNumber(a.title)
+      const bNum = getNumber(b.title)
 
-      // Sort by numbers if both are box variants
+      // If both have numbers, sort numerically
       if (aNum !== Infinity && bNum !== Infinity) {
         return aNum - bNum
       }
-
       return 0
     })
-  }, [product.variants])
 
-  // Ensure product has sorted options and valid arrays
-  const sortedProduct = React.useMemo(() => ({
-    ...product,
-    variants: sortedVariants,
-    images: product.images || [],
-    options: [...(product.options || [])].sort((a, b) => {
+    // Sort options to prioritize width
+    const sortedOptions = [...(product.options || [])].sort((a, b) => {
       if (a.title.toLowerCase() === 'width') return -1
       if (b.title.toLowerCase() === 'width') return 1
-      if (a.title.toLowerCase() === 'length') return 1
-      if (b.title.toLowerCase() === 'length') return -1
       return 0
     })
-  }), [product, sortedVariants])
+
+    return {
+      ...product,
+      variants: sortedVariants,
+      options: sortedOptions,
+      images: product.images || []
+    }
+  }, [product])
 
   return (
     <div className="content-container flex flex-col py-6 relative" style={{ isolation: 'isolate' }}>
