@@ -36,12 +36,11 @@
     "@mikro-orm/postgresql": "6.4.3",
     "@react-email/components": "^0.0.26",
     "@rokmohar/medusa-plugin-meilisearch": "^1.0.3",
-    "@typed-dev/medusa-notification-resend": "^1.0.3",
     "awilix": "^8.0.1",
     "medusajs-launch-utils": "latest",
     "minio": "^8.0.3",
     "pg": "^8.13.1",
-    "resend": "^4.1.2",
+    "resend": "^4.0.1",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
