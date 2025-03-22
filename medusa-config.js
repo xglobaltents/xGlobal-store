@@ -1,81 +1,154 @@
-const plugins = [
-  // ...existing plugins...
-  {
-    resolve: `medusa-file-s3`,
-    options: {
-      s3_url: process.env.S3_URL,
-      bucket: process.env.S3_BUCKET,
-      region: process.env.S3_REGION,
-      access_key_id: process.env.S3_ACCESS_KEY_ID,
-      secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
-      cache_control: process.env.S3_CACHE_CONTROL,
-    },
-  },
-  {
-    resolve: `./src/services/resend`,
-    options: {
-      resendOptions: {
-        api_key: process.env.RESEND_API_KEY,
-        from_email: process.env.RESEND_FROM_EMAIL || "noreply@yourdomain.com",
-      },
-    },
-  },
-  // ...existing plugins...
-];
+import { loadEnv, Modules, defineConfig } from '@medusajs/utils';
+import {
+  ADMIN_CORS,
+  AUTH_CORS,
+  BACKEND_URL,
+  COOKIE_SECRET,
+  DATABASE_URL,
+  JWT_SECRET,
+  REDIS_URL,
+  RESEND_API_KEY,
+  RESEND_FROM_EMAIL,
+  SENDGRID_API_KEY,
+  SENDGRID_FROM_EMAIL,
+  SHOULD_DISABLE_ADMIN,
+  STORE_CORS,
+  STRIPE_API_KEY,
+  STRIPE_WEBHOOK_SECRET,
+  WORKER_MODE,
+  MINIO_ENDPOINT,
+  MINIO_ACCESS_KEY,
+  MINIO_SECRET_KEY,
+  MINIO_BUCKET,
+  MEILISEARCH_HOST,
+  MEILISEARCH_ADMIN_KEY
+} from './src/lib/constants';
 
-// ...existing code...
+loadEnv(process.env.NODE_ENV, process.cwd());
 
-module.exports = {
-  // ...existing code...
-  plugins,
+const medusaConfig = {
   projectConfig: {
-    // ...existing project config...
-    email_provider: "resend",
-    email_from: process.env.RESEND_FROM_EMAIL || "noreply@yourdomain.com",
-    
-    notification_settings: {
-      provider_id: "resend",
-      enabled: true
+    database_url: DATABASE_URL,
+    database_logging: false,
+    redis_url: REDIS_URL,
+    worker_mode: WORKER_MODE,
+    http: {
+      admin_cors: ADMIN_CORS,
+      auth_cors: AUTH_CORS,
+      store_cors: STORE_CORS,
+      jwt_secret: JWT_SECRET,
+      cookie_secret: COOKIE_SECRET
     }
   },
+  admin: {
+    backend_url: BACKEND_URL,
+    disable: SHOULD_DISABLE_ADMIN,
+  },
   modules: [
-    // ...existing code...
     {
-      resolve: "@medusajs/medusa/dist/modules/notification",
+      key: Modules.FILE,
+      resolve: '@medusajs/file',
+      options: {
+        providers: [
+          ...(MINIO_ENDPOINT && MINIO_ACCESS_KEY && MINIO_SECRET_KEY ? [{
+            resolve: './src/modules/minio-file',
+            id: 'minio',
+            options: {
+              endPoint: MINIO_ENDPOINT,
+              accessKey: MINIO_ACCESS_KEY,
+              secretKey: MINIO_SECRET_KEY,
+              bucket: MINIO_BUCKET || 'medusa-media'
+            }
+          }] : [{
+            resolve: '@medusajs/file-local',
+            id: 'local',
+            options: {
+              upload_dir: 'static',
+              backend_url: `${BACKEND_URL}/static`
+            }
+          }])
+        ]
+      }
+    },
+    ...(REDIS_URL ? [{
+      key: Modules.EVENT_BUS,
+      resolve: '@medusajs/event-bus-redis',
+      options: {
+        redisUrl: REDIS_URL
+      }
+    },
+    {
+      key: Modules.WORKFLOW_ENGINE,
+      resolve: '@medusajs/workflow-engine-redis',
+      options: {
+        redis: {
+          url: REDIS_URL,
+        }
+      }
+    }] : []),
+    ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL || RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
+      key: Modules.NOTIFICATION,
+      resolve: '@medusajs/notification',
+      options: {
+        providers: [
+          ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL ? [{
+            resolve: '@medusajs/notification-sendgrid',
+            id: 'sendgrid',
+            options: {
+              channels: ['email'],
+              api_key: SENDGRID_API_KEY,
+              from: SENDGRID_FROM_EMAIL,
+            }
+          }] : []),
+          ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
+            resolve: './src/modules/email-notifications',
+            id: 'resend',
+            options: {
+              channels: ['email'],
+              api_key: RESEND_API_KEY,
+              from: RESEND_FROM_EMAIL,
+            },
+          }] : []),
+        ]
+      }
+    }] : []),
+    ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
+      key: Modules.PAYMENT,
+      resolve: '@medusajs/payment',
       options: {
         providers: [
           {
-            resolve: "./src/modules/resend",
-            id: "resend",
+            resolve: '@medusajs/payment-stripe',
+            id: 'stripe',
             options: {
-              channels: ["email"],
-              api_key: process.env.RESEND_API_KEY,
-              from: process.env.RESEND_FROM_EMAIL,
-              admin_url: process.env.ADMIN_URL || "http://localhost:7001",
+              api_key: STRIPE_API_KEY,
+              webhook_secret: STRIPE_WEBHOOK_SECRET,
             },
           },
         ],
       },
-    },
-    // If you want to use local notifications instead (for development)
-    // Uncomment this and comment out the resend provider above
-    /*
-    {
-      resolve: "@medusajs/medusa/dist/modules/notification",
-      options: {
-        providers: [
-          {
-            resolve: "@medusajs/medusa/dist/services/notification-local",
-            id: "local",
-            options: {
-              channels: ["email"],
-            },
-          },
-        ],
-      },
-    },
-    */
-    // ...existing code...
+    }] : [])
   ],
-  // ...existing code...
+  plugins: [
+    ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
+      resolve: '@rokmohar/medusa-plugin-meilisearch',
+      options: {
+        config: {
+          host: MEILISEARCH_HOST,
+          apiKey: MEILISEARCH_ADMIN_KEY
+        },
+        settings: {
+          products: {
+            indexSettings: {
+              searchableAttributes: ['title', 'description', 'variant_sku'],
+              displayedAttributes: ['id', 'title', 'description', 'variant_sku', 'thumbnail', 'handle'],
+            },
+            primaryKey: 'id',
+          }
+        }
+      }
+    }] : [])
+  ]
 };
+
+export default defineConfig(medusaConfig);
