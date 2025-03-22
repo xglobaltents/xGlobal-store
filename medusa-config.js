@@ -39,6 +39,7 @@ const medusaConfig = {
       jwt_secret: JWT_SECRET,
       cookie_secret: COOKIE_SECRET
     },
+    // Legacy notification config (still needed for some internal flows)
     email_provider: "resend",
     email_from: RESEND_FROM_EMAIL || "noreply@yourdomain.com",
     notification_settings: {
@@ -93,6 +94,7 @@ const medusaConfig = {
       }
     }] : []),
     // Simplify the notification module setup - only include if we have credentials
+    /*
     ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
       key: Modules.NOTIFICATION,
       resolve: '@medusajs/notification',
@@ -110,6 +112,7 @@ const medusaConfig = {
         ]
       }
     }] : []),
+    */
     ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
       key: Modules.PAYMENT,
       resolve: '@medusajs/payment',
@@ -128,7 +131,7 @@ const medusaConfig = {
     }] : [])
   ],
   plugins: [
-    // Add the Resend notification plugin
+    // Add the Resend notification plugin - make sure it's at the top of the plugins array
     {
       resolve: `./src/services/notification-provider`,
       options: {
