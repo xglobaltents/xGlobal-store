@@ -1,24 +1,38 @@
 /**
  * Handle invite created events
  */
-export default async function handleInviteCreated({ 
+export default async function userInviteHandler({ 
   data, 
-  container,
+  eventName, 
+  container 
 }) {
-  try {
-    console.log("Invite created event received for:", data?.user_email)
+  const notificationService = container.resolve("notificationModuleService")
+  
+  if (eventName === "invite.created" || eventName === "invite.resent") {
+    console.log(`Processing ${eventName} event for user invite`)
     
-    const notificationService = container.resolve("notificationService")
-    if (!notificationService) {
-      console.error("Notification service not available")
-      return
+    try {
+      // Get domain from environment or use default
+      const domain = process.env.BACKEND_URL || "https://dashboard.xglobal-tents.app"
+      
+      await notificationService.createNotifications([
+        {
+          type: "invite",
+          to: data.user_email,
+          data: {
+            ...data,
+            domain
+          }
+        }
+      ], {
+        attachments: [],
+        channel: "email",
+        event_name: eventName,
+      })
+      
+      console.log(`Successfully sent ${eventName} notification to ${data.user_email}`)
+    } catch (error) {
+      console.error(`Failed to send ${eventName} notification:`, error.message)
     }
-    
-    // Simple notification dispatch
-    await notificationService.send("invite.created", data)
-    console.log("Invite notification dispatched successfully")
-  } catch (error) {
-    // Log but don't throw to prevent deployment crashes
-    console.error("Failed to handle invite notification:", error)
   }
 }

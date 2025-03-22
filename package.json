@@ -3,7 +3,8 @@
   "dependencies": {
     // ...existing dependencies...
     "resend": "^2.0.0",
-    "@medusajs/medusa": "^1.12.1"
+    "@medusajs/medusa": "^1.12.1",
+    "@react-email/render": "^0.0.9"
   },
   // ...existing code...
   "scripts": {
