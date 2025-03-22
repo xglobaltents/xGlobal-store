@@ -101,7 +101,7 @@ const medusaConfig = {
             }
           }] : []),
           ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
-            resolve: 'medusa-notification-resend',
+            resolve: '@typed-dev/medusa-notification-resend',
             id: 'resend',
             options: {
               channels: ['email'],

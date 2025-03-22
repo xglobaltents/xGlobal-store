@@ -50,6 +50,9 @@ importers:
       '@rokmohar/medusa-plugin-meilisearch':
         specifier: ^1.0.3
         version: 1.0.4(mjytfa744iodj6cufrdikcu5em)
+      '@typed-dev/medusa-notification-resend':
+        specifier: ^1.0.3
+        version: 1.0.3(@medusajs/types@2.4.0(awilix@8.0.1)(ioredis@5.5.0)(vite@5.4.14(@types/node@20.17.17)))(@medusajs/utils@2.4.0(@babel/core@7.26.8)(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.13.1))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.17.17)(pg@8.13.1))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(express@4.21.2)(ioredis@5.5.0)(pg@8.13.1)(vite@5.4.14(@types/node@20.17.17)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       awilix:
         specifier: ^8.0.1
         version: 8.0.1
@@ -63,7 +66,7 @@ importers:
         specifier: ^8.13.1
         version: 8.13.1
       resend:
-        specifier: 4.0.1
+        specifier: ^4.0.1
         version: 4.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ulid:
         specifier: ^2.3.0
@@ -3748,6 +3751,13 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@typed-dev/medusa-notification-resend@1.0.3':
+    resolution: {integrity: sha512-Ve1x7R/rmEawlL+hRyxSZRMiiUcYu5uPaToMLhMlwFmZehcR+Ws518AzNX+KgYHS5jMJhgFcpWkga/Iw/vK96A==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@medusajs/types': '*'
+      '@medusajs/utils': '*'
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -12124,6 +12134,15 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@typed-dev/medusa-notification-resend@1.0.3(@medusajs/types@2.4.0(awilix@8.0.1)(ioredis@5.5.0)(vite@5.4.14(@types/node@20.17.17)))(@medusajs/utils@2.4.0(@babel/core@7.26.8)(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.13.1))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.17.17)(pg@8.13.1))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(express@4.21.2)(ioredis@5.5.0)(pg@8.13.1)(vite@5.4.14(@types/node@20.17.17)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@medusajs/types': 2.4.0(awilix@8.0.1)(ioredis@5.5.0)(vite@5.4.14(@types/node@20.17.17))
+      '@medusajs/utils': 2.4.0(@babel/core@7.26.8)(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.13.1))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.17.17)(pg@8.13.1))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(express@4.21.2)(ioredis@5.5.0)(pg@8.13.1)(vite@5.4.14(@types/node@20.17.17))
+      resend: 4.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@types/argparse@1.0.38': {}
 
