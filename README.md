@@ -9,7 +9,7 @@
 </p>
 
 <h2 align="center">
-  xGlobal-tents.app
+  xGlobal-tents.app 
 </h2>
 <h4 align="center">
   Backend + Nextjs + postgres + redis + MinIO + MeiliSearch
