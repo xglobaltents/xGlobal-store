@@ -1,17 +1,19 @@
 {
-  // ...existing code...
   "dependencies": {
-    // ...existing dependencies...
     "resend": "^2.0.0",
     "@medusajs/medusa": "^1.12.1",
-    "@react-email/render": "^0.0.9"
+    "@medusajs/utils": "^1.9.0",
+    "@react-email/render": "^0.0.9",
+    "dotenv": "^16.3.1",
+    "esm": "^3.2.25",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
-  // ...existing code...
   "scripts": {
-    // ...existing scripts...
     "build": "cross-env NODE_ENV=production medusa-admin build",
-    "deploy": "npm run build && medusa start",
-    "debug": "cross-env NODE_ENV=development medusa develop --verbose"
+    "predeploy": "node -r esm src/scripts/check-deployment.js",
+    "deploy": "npm run predeploy && npm run build && medusa start",
+    "debug": "cross-env NODE_ENV=development medusa develop --verbose",
+    "test-email": "node -r esm src/scripts/test-email.js"
   }
-  // ...existing code...
 }
