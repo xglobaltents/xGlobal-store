@@ -1,5 +1,3 @@
-// ...existing code...
-
 const plugins = [
   // ...existing plugins...
   {
@@ -13,7 +11,6 @@ const plugins = [
       cache_control: process.env.S3_CACHE_CONTROL,
     },
   },
-  // Simple path notation is more compatible
   {
     resolve: `./src/services/resend`,
     options: {
@@ -33,15 +30,52 @@ module.exports = {
   plugins,
   projectConfig: {
     // ...existing project config...
-    // Simple configuration for email
     email_provider: "resend",
     email_from: process.env.RESEND_FROM_EMAIL || "noreply@yourdomain.com",
     
-    // This is the proper notification config pattern for Medusa 2.x
     notification_settings: {
       provider_id: "resend",
       enabled: true
     }
   },
+  modules: [
+    // ...existing code...
+    {
+      resolve: "@medusajs/medusa/dist/modules/notification",
+      options: {
+        providers: [
+          {
+            resolve: "./src/modules/resend",
+            id: "resend",
+            options: {
+              channels: ["email"],
+              api_key: process.env.RESEND_API_KEY,
+              from: process.env.RESEND_FROM_EMAIL,
+              admin_url: process.env.ADMIN_URL || "http://localhost:7001",
+            },
+          },
+        ],
+      },
+    },
+    // If you want to use local notifications instead (for development)
+    // Uncomment this and comment out the resend provider above
+    /*
+    {
+      resolve: "@medusajs/medusa/dist/modules/notification",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/dist/services/notification-local",
+            id: "local",
+            options: {
+              channels: ["email"],
+            },
+          },
+        ],
+      },
+    },
+    */
+    // ...existing code...
+  ],
   // ...existing code...
 };
