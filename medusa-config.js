@@ -13,6 +13,7 @@ const plugins = [
       cache_control: process.env.S3_CACHE_CONTROL,
     },
   },
+  // Simple path notation is more compatible
   {
     resolve: `./src/services/resend`,
     options: {
@@ -32,16 +33,15 @@ module.exports = {
   plugins,
   projectConfig: {
     // ...existing project config...
-    // Add this to ensure notification providers are properly registered
-    notifications: {
-      providers: {
-        resend: {
-          active: true,
-          // Match this to the ResendService identifier
-          provider_id: "resend",
-        },
-      },
-    },
+    // Simple configuration for email
+    email_provider: "resend",
+    email_from: process.env.RESEND_FROM_EMAIL || "noreply@yourdomain.com",
+    
+    // This is the proper notification config pattern for Medusa 2.x
+    notification_settings: {
+      provider_id: "resend",
+      enabled: true
+    }
   },
   // ...existing code...
 };
