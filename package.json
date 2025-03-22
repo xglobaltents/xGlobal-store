@@ -17,6 +17,7 @@
     "deploy": "npm run predeploy && npm run build && medusa start",
     "debug": "cross-env NODE_ENV=development medusa develop --verbose",
     "test-email": "node -r esm src/scripts/test-email.js",
-    "test-resend": "node -r esm src/test-resend.js"
+    "test-resend": "node -r esm src/test-resend.js",
+    "resend-test": "node -r esm ./scripts/test-resend-direct.js"
   }
 }
