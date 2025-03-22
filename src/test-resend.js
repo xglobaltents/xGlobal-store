@@ -60,3 +60,35 @@ async function main() {
 }
 
 main().catch(console.error);
+
+// Simple test file to check if Resend is working
+import { Resend } from "resend";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Initialize with the latest version syntax
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function testResend() {
+  try {
+    // Using the current API for v4.1.2
+    const { data, error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+      to: 'test@example.com',  // Replace with your email
+      subject: 'Test Email',
+      html: '<p>This is a test email from your Medusa store!</p>',
+    });
+
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent successfully!', data);
+    }
+  } catch (err) {
+    console.error('Exception occurred:', err);
+  }
+}
+
+testResend();

@@ -38,6 +38,12 @@ const medusaConfig = {
       store_cors: STORE_CORS,
       jwt_secret: JWT_SECRET,
       cookie_secret: COOKIE_SECRET
+    },
+    email_provider: "resend",
+    email_from: RESEND_FROM_EMAIL || "noreply@yourdomain.com",
+    notification_settings: {
+      provider_id: "resend",
+      enabled: true
     }
   },
   admin: {
@@ -86,21 +92,12 @@ const medusaConfig = {
         }
       }
     }] : []),
-    ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL || RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
+    {
       key: Modules.NOTIFICATION,
       resolve: '@medusajs/notification',
       options: {
         providers: [
-          ...(SENDGRID_API_KEY && SENDGRID_FROM_EMAIL ? [{
-            resolve: '@medusajs/notification-sendgrid',
-            id: 'sendgrid',
-            options: {
-              channels: ['email'],
-              api_key: SENDGRID_API_KEY,
-              from: SENDGRID_FROM_EMAIL,
-            }
-          }] : []),
-          ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
+          {
             resolve: '@typed-dev/medusa-notification-resend',
             id: 'resend',
             options: {
@@ -108,10 +105,10 @@ const medusaConfig = {
               api_key: RESEND_API_KEY,
               from: RESEND_FROM_EMAIL,
             },
-          }] : []),
+          }
         ]
       }
-    }] : []),
+    },
     ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
       key: Modules.PAYMENT,
       resolve: '@medusajs/payment',
