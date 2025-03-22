@@ -40,7 +40,7 @@
     "medusajs-launch-utils": "latest",
     "minio": "^8.0.3",
     "pg": "^8.13.1",
-    "resend": "4.0.1",
+    "resend": "^4.0.1",
     "ulid": "^2.3.0"
   },
   "devDependencies": {
