@@ -1,3 +1,5 @@
+import { NotificationService } from "@medusajs/medusa";
+
 /**
  * Handle invite created events
  */
@@ -69,3 +71,20 @@ export default async function userInviteHandler({
     }
   }
 }
+
+export default async function handleInvite(data, container) {
+  const notificationService = container.resolve(NotificationService);
+
+  await notificationService.send({
+    to: data.user_email,
+    templateId: "invite",
+    data: {
+      inviteToken: data.token,
+      userEmail: data.user_email,
+      displayName: data.user_email.split('@')[0],
+      inviteUrl: `${process.env.ADMIN_URL}/invite?token=${data.token}`,
+    },
+  });
+}
+
+handleInvite.event = "invite.created";

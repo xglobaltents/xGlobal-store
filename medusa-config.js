@@ -92,7 +92,8 @@ const medusaConfig = {
         }
       }
     }] : []),
-    {
+    // Simplify the notification module setup - only include if we have credentials
+    ...(RESEND_API_KEY && RESEND_FROM_EMAIL ? [{
       key: Modules.NOTIFICATION,
       resolve: '@medusajs/notification',
       options: {
@@ -108,7 +109,7 @@ const medusaConfig = {
           }
         ]
       }
-    },
+    }] : []),
     ...(STRIPE_API_KEY && STRIPE_WEBHOOK_SECRET ? [{
       key: Modules.PAYMENT,
       resolve: '@medusajs/payment',
