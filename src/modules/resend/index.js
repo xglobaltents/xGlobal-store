@@ -1,45 +1,82 @@
-import { NotificationService } from "medusa-interfaces"
-import { Resend } from 'resend'
+import { NotificationService } from "@medusajs/medusa"
+import { Resend } from "resend"
+import { render } from "@react-email/render"
+import { InviteEmail } from "./templates/invite-email"
 
-class ResendService extends NotificationService {
+class ResendProvider extends NotificationService {
   static identifier = "resend"
 
-  constructor({ }, options) {
-    super()
+  constructor(container, options) {
+    super(container)
     
-    this.options = options
-    this.resend = new Resend(options.api_key)
+    this.options_ = options
+    
+    // Initialize Resend client with API key
+    this.resendClient_ = new Resend(options.api_key)
+    this.fromEmail_ = options.from
+    this.adminUrl_ = options.admin_url || "http://localhost:7001"
   }
 
-  async sendNotification(event, eventData, attachmentGenerator) {
-    if (event.startsWith("invite.")) {
-      return await this.sendInviteNotification(event, eventData)
+  async sendNotification(event, data, attachmentGenerator) {
+    if (event === "invite.created" || event === "invite.resent") {
+      return await this.sendInvite(data)
     }
     
-    // Handle other notification types as needed
+    // Handle other notification types here
     return
   }
 
-  async sendInviteNotification(event, data) {
-    const { email, token, user_email } = data
-
-    const subject = "You've been invited to the store's team"
-    const message = `You've been invited to join the team. Click this link to accept the invite: ${this.options.admin_url}/invite?token=${token}&email=${email}`
-
-    return await this.resend.emails.send({
-      from: this.options.from,
-      to: email,
-      subject: subject,
-      text: message,
-    })
+  async sendInvite(data) {
+    try {
+      const to = data.to || data.user_email || data.email
+      const token = data.data?.token || data.token
+      const displayName = data.data?.display_name || data.display_name || to
+      
+      if (!to || !token) {
+        throw new Error("Missing required data for sending invite email")
+      }
+      
+      // Generate invite URL
+      const inviteUrl = `${this.adminUrl_}/invite?token=${token}`
+      
+      // Render email using React template
+      const emailHtml = render(
+        InviteEmail({
+          inviteUrl,
+          userEmail: to,
+          displayName: displayName
+        })
+      )
+      
+      // Send email via Resend
+      const { data: responseData, error } = await this.resendClient_.emails.send({
+        from: this.fromEmail_,
+        to: to,
+        subject: "You've been invited to join the team",
+        html: emailHtml,
+      })
+      
+      if (error) {
+        throw new Error(`Resend API error: ${error.message}`)
+      }
+      
+      return responseData
+    } catch (error) {
+      console.error("Failed to send invite email:", error)
+      throw error
+    }
   }
 
   async resendNotification(notification, config, attachmentGenerator) {
-    const data = notification.data
-    const event = notification.event_name
-    
-    return await this.sendNotification(event, data, attachmentGenerator)
+    return await this.sendNotification(
+      notification.event_name,
+      {
+        ...notification.data,
+        ...config,
+      },
+      attachmentGenerator
+    )
   }
 }
 
-export default ResendService
+export default ResendProvider
