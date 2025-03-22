@@ -128,6 +128,16 @@ const medusaConfig = {
     }] : [])
   ],
   plugins: [
+    // Add the Resend notification plugin
+    {
+      resolve: `./src/services/notification-provider`,
+      options: {
+        resendOptions: {
+          api_key: RESEND_API_KEY,
+          from_email: RESEND_FROM_EMAIL || "noreply@yourdomain.com",
+        },
+      },
+    },
     ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
       resolve: '@rokmohar/medusa-plugin-meilisearch',
       options: {
