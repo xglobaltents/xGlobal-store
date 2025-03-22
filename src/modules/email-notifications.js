@@ -1,3 +1,6 @@
+// This file is no longer used as we're now using the official medusa-notification-resend package.
+// Keeping it as reference only.
+
 import { Resend } from "resend";
 
 class ResendNotificationService {
@@ -40,4 +43,5 @@ class ResendNotificationService {
   }
 }
 
+// Rename export to avoid conflicts
 export default ResendNotificationService;
