@@ -41,11 +41,7 @@ const medusaConfig = {
     },
     // Legacy notification config (still needed for some internal flows)
     email_provider: "resend",
-    email_from: RESEND_FROM_EMAIL || "noreply@yourdomain.com",
-    notification_settings: {
-      provider_id: "resend",
-      enabled: true
-    }
+    email_from: RESEND_FROM_EMAIL
   },
   admin: {
     backend_url: BACKEND_URL,
@@ -103,10 +99,11 @@ const medusaConfig = {
             resolve: './src/services/notification-provider',
             id: 'resend',
             options: {
-              channels: ['email'],
-              api_key: RESEND_API_KEY,
-              from: RESEND_FROM_EMAIL,
-            },
+              resendOptions: {
+                api_key: RESEND_API_KEY,
+                from_email: RESEND_FROM_EMAIL,
+              }
+            }
           }
         ]
       }
@@ -129,16 +126,6 @@ const medusaConfig = {
     }] : [])
   ],
   plugins: [
-    // Add the Resend notification plugin - make sure it's at the top of the plugins array
-    {
-      resolve: `./src/services/notification-provider`,
-      options: {
-        resendOptions: {
-          api_key: RESEND_API_KEY,
-          from_email: RESEND_FROM_EMAIL || "noreply@yourdomain.com",
-        },
-      },
-    },
     ...(MEILISEARCH_HOST && MEILISEARCH_ADMIN_KEY ? [{
       resolve: '@rokmohar/medusa-plugin-meilisearch',
       options: {
