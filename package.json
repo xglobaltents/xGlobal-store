@@ -1,0 +1,16 @@
+{
+  // ...existing code...
+  "dependencies": {
+    // ...existing dependencies...
+    "resend": "^2.0.0",
+    "@medusajs/medusa": "^1.12.1"
+  },
+  // ...existing code...
+  "scripts": {
+    // ...existing scripts...
+    "build": "cross-env NODE_ENV=production medusa-admin build",
+    "deploy": "npm run build && medusa start",
+    "debug": "cross-env NODE_ENV=development medusa develop --verbose"
+  }
+  // ...existing code...
+}
